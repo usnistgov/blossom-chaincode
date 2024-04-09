@@ -1,0 +1,15 @@
+**/.gradle
+**/build
+**/out
+**/.idea
+**/*.iml
+**/gradle
+**/e2e/ui
+**/e2e/src/node_modules
+**/e2e/src/wallet
+**/e2e/network/channel-artifacts
+**/e2e/network/organizations
+**/e2e/network/system-genesis-block
+**/e2e/network/*.tar.gz
+**/e2e/network/*.txt
+
