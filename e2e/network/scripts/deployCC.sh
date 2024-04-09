@@ -69,8 +69,6 @@ elif [ "$CC_SRC_LANGUAGE" = "java" ]; then
   popd
   successln "Finished compiling Java code"
   #CC_SRC_PATH=$CC_SRC_PATH/build/install/$CC_NAME
-  #CC_SRC_PATH=/Users/jnr6/Documents/blossom-core/chaincode/authorization/build/install/authorization
-  # CC_SRC_PATH=/Users/jnr6/Documents/blossom-core/chaincode/abstore/build/build/libs
 
 elif [ "$CC_SRC_LANGUAGE" = "javascript" ]; then
   CC_RUNTIME_LANGUAGE=node

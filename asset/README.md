@@ -78,7 +78,6 @@ account status. Account status is determined by invoking the authorization chain
   - [AddLicenses](#AddLicenses)
   - [RemoveLicenses](#RemoveLicenses)
   - [UpdateEndDate](#UpdateEndDate)
-  - [RemoveAsset](#RemoveAsset)
   - [GetAssets](#GetAssets)
   - [GetAsset](#GetAsset)
 - [Order Contract](#order-contract)
@@ -466,17 +465,6 @@ Remove the given licenses from the asset's pool. An error will occur if a licens
 Update the end date for an asset.
 
 - transient: [UpdateEndDateRequest](#UpdateEndDateRequest)
-- output: none
-- endorsers: SP
-- NGAC policy requirements:
-  - Role: SO
-  - Account: SP
-  - Status: Authorized
-
-### RemoveAsset
-Remove the asset from the catalog.
-
-- transient: [AssetIdRequest](#AssetIdRequest)
 - output: none
 - endorsers: SP
 - NGAC policy requirements:
