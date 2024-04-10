@@ -12,4 +12,5 @@
 **/e2e/network/system-genesis-block
 **/e2e/network/*.tar.gz
 **/e2e/network/*.txt
-
+**/asset/libs/
+**/authorization/libs/
