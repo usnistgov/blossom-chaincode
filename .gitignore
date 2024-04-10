@@ -3,7 +3,6 @@
 **/out
 **/.idea
 **/*.iml
-**/gradle
 **/e2e/ui
 **/e2e/src/node_modules
 **/e2e/src/wallet
