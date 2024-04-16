@@ -166,7 +166,7 @@ public class PolicyBuilder {
         pap.graph().createUserAttribute(ACQ_OFFICER, "RBAC");
         pap.graph().createUserAttribute(TPOC, "RBAC");
 
-        // SO
+        // LO
         pap.graph().associate(LICENSE_OWNER, "RBAC/asset", new AccessRightSet(
                 READ_ASSETS,
                 WRITE_ASSET,

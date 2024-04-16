@@ -43,7 +43,7 @@ account status. Account status is determined by invoking the authorization chain
 
 1. Acquisition Officer (ACQ) - RO and SP
 2. Technical Point of Contact (TPOC) - RO only
-3. System Owner (SO) - SP only
+3. License Owner (LO) - SP only
 
 ## Chaincode docs
 - [Transient Requests](#transient-requests)
@@ -435,7 +435,7 @@ Add a new asset.
 - output: [IdResponse](#IdResponse)
 - endorsers: SP
 - NGAC policy requirements:
-  - Role: SO
+  - Role: LO
   - Account: SP
   - Status: Authorized
 
@@ -446,7 +446,7 @@ Add licenses to an already created asset.
 - output: none
 - endorsers: SP
 - NGAC policy requirements:
-  - Role: SO
+  - Role: LO
   - Account: SP
   - Status: Authorized
 
@@ -457,7 +457,7 @@ Remove the given licenses from the asset's pool. An error will occur if a licens
 - output: none
 - endorsers: SP
 - NGAC policy requirements:
-  - Role: SO
+  - Role: LO
   - Account: SP
   - Status: Authorized
 
@@ -468,7 +468,7 @@ Update the end date for an asset.
 - output: none
 - endorsers: SP
 - NGAC policy requirements:
-  - Role: SO
+  - Role: LO
   - Account: SP
   - Status: Authorized
 
@@ -479,7 +479,7 @@ Get all assets.
 - output: [AssetResponse](#AssetResponse)
 - endorsers: SP
 - NGAC policy requirements:
-  - Role: SO, ACQ, TPOC
+  - Role: LO, ACQ, TPOC
   - Account: any
   - Status: Authorized
 
@@ -490,7 +490,7 @@ Get the asset with the given ID.
 - output: [AssetDetailResponse](#AssetDetailResponse)
 - endorsers: SP
 - NGAC policy requirements:
-  - Role: SO, ACQ, TPOC
+  - Role: LO, ACQ, TPOC
   - Account: any
   - Status: Authorized
 
@@ -501,7 +501,7 @@ Get the transaction history of a given license. This will return a list of the t
 - output: String[]
 - endorsers: SP
 - NGAC policy requirements:
-  - Role: SO
+  - Role: LO
   - Account: SP
   - Status: Authorized
 
@@ -656,7 +656,7 @@ Get an order by ID for an account.
 - output: [#Order](#Order)
 - endorsers: SP
 - NGAC policy requirements:
-  - Role: SO, ACQ, TPOC
+  - Role: LO, ACQ, TPOC
   - Account: RO or SP
   - Status: Authorized
 
@@ -667,7 +667,7 @@ Get all orders for an account.
 - output: [Order](#Order)[]
 - endorsers: SP
 - NGAC policy requirements:
-  - Role: SO, ACQ, TPOC
+  - Role: LO, ACQ, TPOC
   - Account: RO or SP
   - Status: Authorized
 
@@ -678,7 +678,7 @@ Get orders for an account with a given asset.
 - output: [Order](#Order)[]
 - endorsers: SP
 - NGAC policy requirements:
-  - Role: SO, ACQ, TPOC
+  - Role: LO, ACQ, TPOC
   - Account: RO or SP
   - Status: Authorized
 
@@ -689,7 +689,7 @@ Get all orders with a given asset. This will return only the orders the CID has 
 - output: [Order](#Order)[]
 - endorsers: SP
 - NGAC policy requirements:
-  - Role: SO, ACQ, TPOC
+  - Role: LO, ACQ, TPOC
   - Account: RO or SP
   - Status: Authorized
 
@@ -700,7 +700,7 @@ Get the licenses available (not associated with a SWID) for this order ID and ac
 - output: String[]
 - endorsers: RO
 - NGAC policy requirements:
-  - Role: SO, ACQ, TPOC
+  - Role: LO, ACQ, TPOC
   - Account: RO or SP
   - Status: Authorized
 
@@ -755,6 +755,6 @@ Get the licenses that are already associated with a SWID tag for this order ID a
 - output: String[]
 - endorsers: RO
 - NGAC policy requirements:
-  - Role: SO, ACQ, TPOC
+  - Role: LO, ACQ, TPOC
   - Account: RO or SP
   - Status: Authorized
