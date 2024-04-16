@@ -3,7 +3,6 @@ package contract;
 import contract.request.*;
 import contract.response.AllocateLicensesResponse;
 import contract.response.AssetDetailResponse;
-import contract.response.IdResponse;
 import mock.MockContext;
 import mock.MockIdentity;
 import model.Status;
@@ -12,10 +11,8 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
 import java.time.Instant;
-import java.util.List;
 import java.util.Set;
 
-import static mock.MockContextUtil.newTestContext;
 import static mock.MockContextUtil.newTestContextWithAuthorized;
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -28,7 +25,7 @@ class AssetContractTest {
     class AddLicenses {
         @Test
         void test_licenseAlreadyExists_throwsException() {
-            MockContext ctx = newTestContextWithAuthorized(MockIdentity.ORG1_SO);
+            MockContext ctx = newTestContextWithAuthorized(MockIdentity.ORG1_LO);
             ctx.setTxId("123");
             ctx.setTimestamp(Instant.now());
             ctx.setTransientData(new AddAssetRequest(
@@ -48,7 +45,7 @@ class AssetContractTest {
     class RemoveLicenses {
         @Test
         void test_licenseDoesNotExist_throwsException() {
-            MockContext ctx = newTestContextWithAuthorized(MockIdentity.ORG1_SO);
+            MockContext ctx = newTestContextWithAuthorized(MockIdentity.ORG1_LO);
             ctx.setTxId("123");
             ctx.setTimestamp(Instant.now());
             ctx.setTransientData(new AddAssetRequest(
@@ -64,7 +61,7 @@ class AssetContractTest {
         }
         @Test
         void test_licenseAllocated_throwsException() {
-            MockContext ctx = newTestContextWithAuthorized(MockIdentity.ORG1_SO);
+            MockContext ctx = newTestContextWithAuthorized(MockIdentity.ORG1_LO);
             ctx.getStub().setAccountStatus(Status.AUTHORIZED);
             ctx.setTxId("123");
             ctx.setTimestamp(Instant.now());
@@ -124,7 +121,7 @@ class AssetContractTest {
             orderContract.SendLicenses(ctx);
 
             // test
-            ctx.setClientIdentity(MockIdentity.ORG1_SO);
+            ctx.setClientIdentity(MockIdentity.ORG1_LO);
             ctx.setTransientData(new RemoveLicensesRequest(
                     "123", Set.of("1")
             ));
@@ -137,7 +134,7 @@ class AssetContractTest {
     class GetAsset {
         @Test
         void test_GetAssetReturnsBasicInfo() {
-            MockContext ctx = newTestContextWithAuthorized(MockIdentity.ORG1_SO);
+            MockContext ctx = newTestContextWithAuthorized(MockIdentity.ORG1_LO);
             ctx.getStub().setAccountStatus(Status.AUTHORIZED);
             ctx.setTxId("123");
             ctx.setTimestamp(Instant.now());
@@ -163,7 +160,7 @@ class AssetContractTest {
     class GetLicenseTxHistory {
         @Test
         void test_LicenseDoesNotExist_throwsException() {
-            MockContext ctx = newTestContextWithAuthorized(MockIdentity.ORG1_SO);
+            MockContext ctx = newTestContextWithAuthorized(MockIdentity.ORG1_LO);
             ctx.getStub().setAccountStatus(Status.AUTHORIZED);
             ctx.setTxId("123");
             ctx.setTimestamp(Instant.now());

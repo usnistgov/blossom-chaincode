@@ -6,7 +6,6 @@ import model.Allocated;
 import model.License;
 import model.Order;
 import model.Status;
-import ngac.UnauthorizedException;
 import org.hyperledger.fabric.shim.ChaincodeException;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -35,7 +34,7 @@ class OrderContractTest {
     class GetQuoteTest {
         @Test
         void test_assetDoesNotExist_throwsException() {
-            MockContext ctx = newTestContext(ORG1_SO);
+            MockContext ctx = newTestContext(ORG1_LO);
             ctx.getStub().setAccountStatus(Status.AUTHORIZED);
 
             ctx.setClientIdentity(ORG2_TPOC);
@@ -51,7 +50,7 @@ class OrderContractTest {
     class SendQuoteTest {
         @Test
         void test_orderDoesNotExist_throwsException() {
-            MockContext ctx = newTestContext(ORG1_SO);
+            MockContext ctx = newTestContext(ORG1_LO);
             ctx.getStub().setAccountStatus(Status.AUTHORIZED);
 
             ctx.setClientIdentity(ORG1_ACQ);
@@ -64,7 +63,7 @@ class OrderContractTest {
 
         @Test
         void test_orderStatusIsNotQuoteRequested_throwsException() {
-            MockContext ctx = newTestContext(ORG1_SO);
+            MockContext ctx = newTestContext(ORG1_LO);
             ctx.getStub().setAccountStatus(Status.AUTHORIZED);
 
             ctx.getStub().putPrivateData(ADMINMSP_IPDC, orderKey("Org2MSP", "123"), new Order(
@@ -83,7 +82,7 @@ class OrderContractTest {
     class InitiateOrderTest {
         @Test
         void test_orderDoesNotExist_throwsException() {
-            MockContext ctx = newTestContext(ORG1_SO);
+            MockContext ctx = newTestContext(ORG1_LO);
             ctx.getStub().setAccountStatus(Status.AUTHORIZED);
 
             ctx.setClientIdentity(ORG2_TPOC);
@@ -93,7 +92,7 @@ class OrderContractTest {
         }
         @Test
         void test_quoteNotReceived_throwsException() {
-            MockContext ctx = newTestContext(ORG1_SO);
+            MockContext ctx = newTestContext(ORG1_LO);
             ctx.getStub().setAccountStatus(Status.AUTHORIZED);
 
             ctx.getStub().putPrivateData(ADMINMSP_IPDC, orderKey("Org2MSP", "123"), new Order(
@@ -114,7 +113,7 @@ class OrderContractTest {
     class ApproveOrderTest {
         @Test
         void test_orderDoesNotExist_throwsException() {
-            MockContext ctx = newTestContext(ORG1_SO);
+            MockContext ctx = newTestContext(ORG1_LO);
             ctx.getStub().setAccountStatus(Status.AUTHORIZED);
 
             // approve
@@ -127,7 +126,7 @@ class OrderContractTest {
         }
         @Test
         void test_orderNotUpForApproval_throwsException() {
-            MockContext ctx = newTestContext(ORG1_SO);
+            MockContext ctx = newTestContext(ORG1_LO);
             ctx.getStub().setAccountStatus(Status.AUTHORIZED);
 
             ctx.getStub().putPrivateData(ADMINMSP_IPDC, orderKey("Org2MSP", "123"), new Order(
@@ -149,7 +148,7 @@ class OrderContractTest {
     class DenyOrderTest {
         @Test
         void test_orderDoesNotExist_throwsException() {
-            MockContext ctx = newTestContext(ORG1_SO);
+            MockContext ctx = newTestContext(ORG1_LO);
             ctx.getStub().setAccountStatus(Status.AUTHORIZED);
 
             // approve
@@ -162,7 +161,7 @@ class OrderContractTest {
         }
         @Test
         void test_orderNotUpForApproval_throwsException() {
-            MockContext ctx = newTestContext(ORG1_SO);
+            MockContext ctx = newTestContext(ORG1_LO);
             ctx.getStub().setAccountStatus(Status.AUTHORIZED);
 
             ctx.getStub().putPrivateData(ADMINMSP_IPDC, orderKey("Org2MSP", "123"), new Order(
@@ -184,7 +183,7 @@ class OrderContractTest {
     class GetLicensesToAllocateForOrderTest {
         @Test
         void test_renewal_throwsException() {
-            MockContext ctx = newTestContext(ORG1_SO);
+            MockContext ctx = newTestContext(ORG1_LO);
             ctx.getStub().setAccountStatus(Status.AUTHORIZED);
 
             ctx.getStub().putPrivateData(ADMINMSP_IPDC, orderKey("Org2MSP", "123"), new Order(
@@ -202,7 +201,7 @@ class OrderContractTest {
         }
         @Test
         void test_notApproved_throwsException() {
-            MockContext ctx = newTestContext(ORG1_SO);
+            MockContext ctx = newTestContext(ORG1_LO);
             ctx.getStub().setAccountStatus(Status.AUTHORIZED);
 
             ctx.getStub().putPrivateData(ADMINMSP_IPDC, orderKey("Org2MSP", "123"), new Order(
@@ -221,7 +220,7 @@ class OrderContractTest {
 
         @Test
         void test_notEnoughLicenses_throwsException() {
-            MockContext ctx = newTestContext(ORG1_SO);
+            MockContext ctx = newTestContext(ORG1_LO);
             ctx.getStub().setAccountStatus(Status.AUTHORIZED);
 
             ctx.setTxId("123");
@@ -250,7 +249,7 @@ class OrderContractTest {
     class AllocateLicensesTest {
         @Test
         void test_notApproved_throwsException() {
-            MockContext ctx = newTestContext(ORG1_SO);
+            MockContext ctx = newTestContext(ORG1_LO);
             ctx.getStub().setAccountStatus(Status.AUTHORIZED);
 
             ctx.setTxId("123");
@@ -272,7 +271,7 @@ class OrderContractTest {
         }
         @Test
         void test_duplicateLicenses_throwsException() {
-            MockContext ctx = newTestContext(ORG1_SO);
+            MockContext ctx = newTestContext(ORG1_LO);
             ctx.getStub().setAccountStatus(Status.AUTHORIZED);
 
             ctx.setTxId("123");
@@ -294,7 +293,7 @@ class OrderContractTest {
         }
         @Test
         void test_alreadyAllocatedLicense_throwsException() {
-            MockContext ctx = newTestContext(ORG1_SO);
+            MockContext ctx = newTestContext(ORG1_LO);
             ctx.getStub().setAccountStatus(Status.AUTHORIZED);
 
             ctx.setTxId("123");

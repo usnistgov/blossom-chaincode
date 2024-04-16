@@ -28,7 +28,7 @@ class PolicyBuilderTest {
             PolicyBuilder.buildPolicyForAssetDecision(ctx);
         });
         assertEquals(e.getMessage(), "invalid role " + TPOC);
-        ctx.setClientIdentity(MockIdentity.ORG1_SO);
+        ctx.setClientIdentity(MockIdentity.ORG1_LO);
         assertDoesNotThrow(() -> {
             PolicyBuilder.buildPolicyForAssetDecision(ctx);
         });
@@ -37,11 +37,11 @@ class PolicyBuilderTest {
             PolicyBuilder.buildPolicyForAssetDecision(ctx);
         });
 
-        ctx.setClientIdentity(MockIdentity.ORG2_SO);
+        ctx.setClientIdentity(MockIdentity.ORG2_LO);
         e = assertThrows(ChaincodeException.class, () -> {
             PolicyBuilder.buildPolicyForAssetDecision(ctx);
         });
-        assertEquals(e.getMessage(), "invalid role " + SYS_OWNER);
+        assertEquals("invalid role " + LICENSE_OWNER, e.getMessage());
         ctx.setClientIdentity(MockIdentity.ORG2_TPOC);
         assertDoesNotThrow(() -> {
             PolicyBuilder.buildPolicyForAssetDecision(ctx);
@@ -54,7 +54,7 @@ class PolicyBuilderTest {
 
     @Test
     void testPrivilegesOnAssetDecision() throws PMException {
-        MockContext ctx = newTestContext(MockIdentity.ORG1_SO);
+        MockContext ctx = newTestContext(MockIdentity.ORG1_LO);
         ctx.getStub().setAccountStatus(Status.AUTHORIZED);
         PAP pap = buildPolicyForAssetDecision(ctx);
         test(ctx, pap, ASSET_TARGET, new AccessRightSet(READ_ASSETS, READ_ASSET_DETAIL, WRITE_ASSET));
@@ -81,7 +81,7 @@ class PolicyBuilderTest {
         pap = buildPolicyForAssetDecision(ctx);
         test(ctx, pap, ASSET_TARGET, new AccessRightSet());
 
-        ctx.setClientIdentity(MockIdentity.ORG1_SO);
+        ctx.setClientIdentity(MockIdentity.ORG1_LO);
         ctx.getStub().setAccountStatus(Status.UNAUTHORIZED);
         pap = buildPolicyForAssetDecision(ctx);
         test(ctx, pap, ASSET_TARGET, new AccessRightSet());
@@ -89,7 +89,7 @@ class PolicyBuilderTest {
 
     @Test
     void testPrivilegesOnAccountDecision() throws PMException {
-        MockContext ctx = newTestContext(MockIdentity.ORG1_SO);
+        MockContext ctx = newTestContext(MockIdentity.ORG1_LO);
         ctx.getStub().setAccountStatus(Status.AUTHORIZED);
         PAP pap = buildPolicyForAccountDecision(ctx, "Org2MSP");
         test(ctx, pap, accountTarget("Org2MSP"), new AccessRightSet(READ_ORDER, READ_SWID));

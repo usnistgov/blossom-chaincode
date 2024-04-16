@@ -14,7 +14,6 @@ import org.bouncycastle.asn1.x500.X500Name;
 import org.bouncycastle.asn1.x500.style.BCStyle;
 import org.bouncycastle.cert.jcajce.JcaX509CertificateHolder;
 import org.hyperledger.fabric.Logger;
-import org.hyperledger.fabric.Logging;
 import org.hyperledger.fabric.contract.ClientIdentity;
 import org.hyperledger.fabric.contract.Context;
 import org.hyperledger.fabric.shim.Chaincode;
@@ -23,7 +22,6 @@ import org.hyperledger.fabric.shim.ChaincodeException;
 import java.nio.charset.StandardCharsets;
 import java.security.cert.CertificateEncodingException;
 import java.security.cert.X509Certificate;
-import java.util.Arrays;
 import java.util.List;
 
 import static gov.nist.csd.pm.policy.model.access.AdminAccessRights.ALL_ACCESS_RIGHTS;
@@ -36,12 +34,16 @@ public class PolicyBuilder {
      */
     public static final String ADMINMSP = "Org1MSP";
 
+    // roles
+    public static final String BLOSSOM_ROLE_ATTR = "blossom.role";
     public static final String ACQ_OFFICER = "Acquisition Officer";
     public static final String TPOC = "Technical Point of Contact";
-    public static final String SYS_OWNER = "System Owner";
+    public static final String LICENSE_OWNER = "License Owner";
+
     public static final String AUTH_CHAINCODE_NAME = "authorization";
     public static final String AUTH_CHANNEL_NAME = "authorization";
-    public static final String BLOSSOM_ROLE_ATTR = "blossom.role";
+
+    // access rights
     public static final String ASSET_TARGET = "asset_target";
     public static final String WRITE_ASSET = "write_asset";
     public static final String READ_ASSETS = "read_assets";
@@ -69,6 +71,7 @@ public class PolicyBuilder {
             WRITE_SWID,
             READ_SWID
     );
+
     private static final Logger log = Logger.getLogger("PolicyBuilder");
 
     public static PAP buildPolicyForAssetDecision(Context ctx) throws PMException {
@@ -159,17 +162,17 @@ public class PolicyBuilder {
         pap.graph().createObjectAttribute("RBAC/asset", "RBAC");
         pap.graph().createObjectAttribute("RBAC/account", "RBAC");
 
-        pap.graph().createUserAttribute(SYS_OWNER, "RBAC");
+        pap.graph().createUserAttribute(LICENSE_OWNER, "RBAC");
         pap.graph().createUserAttribute(ACQ_OFFICER, "RBAC");
         pap.graph().createUserAttribute(TPOC, "RBAC");
 
         // SO
-        pap.graph().associate(SYS_OWNER, "RBAC/asset", new AccessRightSet(
+        pap.graph().associate(LICENSE_OWNER, "RBAC/asset", new AccessRightSet(
                 READ_ASSETS,
                 WRITE_ASSET,
                 READ_ASSET_DETAIL
         ));
-        pap.graph().associate(SYS_OWNER, "RBAC/account", new AccessRightSet(
+        pap.graph().associate(LICENSE_OWNER, "RBAC/account", new AccessRightSet(
                 READ_ORDER,
                 READ_SWID
         ));
@@ -250,7 +253,7 @@ public class PolicyBuilder {
 
         // if adminmsp only SO and ACQ are allowed roles
         // if not adminmsp only TPOC and ACQ are allowed roles
-        if ((account.equals(ADMINMSP) && !(role.equals(SYS_OWNER) || role.equals(ACQ_OFFICER))) ||
+        if ((account.equals(ADMINMSP) && !(role.equals(LICENSE_OWNER) || role.equals(ACQ_OFFICER))) ||
                 (!account.equals(ADMINMSP) && !(role.equals(TPOC) || role.equals(ACQ_OFFICER)))) {
             throw new ChaincodeException("invalid role " + role);
         }

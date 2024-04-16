@@ -18,7 +18,7 @@ class PDPTest {
 
     @Test
     void canWriteAsset() {
-        MockContext ctx = newTestContext(MockIdentity.ORG1_SO);
+        MockContext ctx = newTestContext(MockIdentity.ORG1_LO);
         ctx.getStub().setAccountStatus(Status.AUTHORIZED);
         assertDoesNotThrow(() -> PDP.canWriteAsset(ctx));
 
@@ -39,14 +39,14 @@ class PDPTest {
         ctx.getStub().setAccountStatus(Status.UNAUTHORIZED);
         assertThrows(UnauthorizedException.class, () -> PDP.canWriteAsset(ctx));
 
-        ctx.setClientIdentity(MockIdentity.ORG1_SO);
+        ctx.setClientIdentity(MockIdentity.ORG1_LO);
         ctx.getStub().setAccountStatus(Status.UNAUTHORIZED);
         assertThrows(UnauthorizedException.class, () -> PDP.canWriteAsset(ctx));
     }
 
     @Test
     void canReadAssetDetail() {
-        MockContext ctx = newTestContext(MockIdentity.ORG1_SO);
+        MockContext ctx = newTestContext(MockIdentity.ORG1_LO);
         ctx.getStub().setAccountStatus(Status.AUTHORIZED);
         assertDoesNotThrow(() -> PDP.canWriteAsset(ctx));
 
@@ -67,7 +67,7 @@ class PDPTest {
         ctx.getStub().setAccountStatus(Status.UNAUTHORIZED);
         assertThrows(UnauthorizedException.class, () -> PDP.canReadAssetDetail(ctx));
 
-        ctx.setClientIdentity(MockIdentity.ORG1_SO);
+        ctx.setClientIdentity(MockIdentity.ORG1_LO);
         ctx.getStub().setAccountStatus(Status.UNAUTHORIZED);
         assertThrows(UnauthorizedException.class, () -> PDP.canReadAssetDetail(ctx));
     }
@@ -95,7 +95,7 @@ class PDPTest {
                 null
         );
 
-        MockContext ctx = newTestContext(MockIdentity.ORG1_SO);
+        MockContext ctx = newTestContext(MockIdentity.ORG1_LO);
         ctx.getStub().setAccountStatus(Status.AUTHORIZED);
         assertEquals(full, PDP.filterAssetDetail(ctx, full));
 
@@ -116,14 +116,14 @@ class PDPTest {
         ctx.getStub().setAccountStatus(Status.UNAUTHORIZED);
         assertThrows(UnauthorizedException.class, () -> PDP.filterAssetDetail(ctx, full));
 
-        ctx.setClientIdentity(MockIdentity.ORG1_SO);
+        ctx.setClientIdentity(MockIdentity.ORG1_LO);
         ctx.getStub().setAccountStatus(Status.UNAUTHORIZED);
         assertThrows(UnauthorizedException.class, () -> PDP.filterAssetDetail(ctx, full));
     }
 
     @Test
     void canReadAssets() {
-        MockContext ctx = newTestContext(MockIdentity.ORG1_SO);
+        MockContext ctx = newTestContext(MockIdentity.ORG1_LO);
         ctx.getStub().setAccountStatus(Status.AUTHORIZED);
         assertDoesNotThrow(() -> PDP.canReadAssets(ctx));
 
@@ -144,14 +144,14 @@ class PDPTest {
         ctx.getStub().setAccountStatus(Status.UNAUTHORIZED);
         assertThrows(UnauthorizedException.class, () -> PDP.canReadAssets(ctx));
 
-        ctx.setClientIdentity(MockIdentity.ORG1_SO);
+        ctx.setClientIdentity(MockIdentity.ORG1_LO);
         ctx.getStub().setAccountStatus(Status.UNAUTHORIZED);
         assertThrows(UnauthorizedException.class, () -> PDP.canReadAssets(ctx));
     }
 
     @Test
     void canAllocateLicense() {
-        MockContext ctx = newTestContext(MockIdentity.ORG1_SO);
+        MockContext ctx = newTestContext(MockIdentity.ORG1_LO);
         ctx.getStub().setAccountStatus(Status.AUTHORIZED);
         assertThrows(UnauthorizedException.class, () -> PDP.canAllocateLicense(ctx));
 
@@ -172,7 +172,7 @@ class PDPTest {
         ctx.getStub().setAccountStatus(Status.UNAUTHORIZED);
         assertThrows(UnauthorizedException.class, () -> PDP.canAllocateLicense(ctx));
 
-        ctx.setClientIdentity(MockIdentity.ORG1_SO);
+        ctx.setClientIdentity(MockIdentity.ORG1_LO);
         ctx.getStub().setAccountStatus(Status.UNAUTHORIZED);
         assertThrows(UnauthorizedException.class, () -> PDP.canAllocateLicense(ctx));
 
@@ -183,7 +183,7 @@ class PDPTest {
 
     @Test
     void canReadOrder() {
-        MockContext ctx = newTestContext(MockIdentity.ORG1_SO);
+        MockContext ctx = newTestContext(MockIdentity.ORG1_LO);
         ctx.getStub().setAccountStatus(Status.AUTHORIZED);
         assertDoesNotThrow(() -> PDP.canReadOrder(ctx, "Org2MSP"));
 
@@ -207,7 +207,7 @@ class PDPTest {
         ctx.getStub().setAccountStatus(Status.UNAUTHORIZED);
         assertThrows(UnauthorizedException.class, () -> PDP.canReadOrder(ctx, "Org2MSP"));
 
-        ctx.setClientIdentity(MockIdentity.ORG1_SO);
+        ctx.setClientIdentity(MockIdentity.ORG1_LO);
         ctx.getStub().setAccountStatus(Status.UNAUTHORIZED);
         assertThrows(UnauthorizedException.class, () -> PDP.canReadOrder(ctx, "Org2MSP"));
 
@@ -218,7 +218,7 @@ class PDPTest {
 
     @Test
     void canInitiateOrder() {
-        MockContext ctx = newTestContext(MockIdentity.ORG1_SO);
+        MockContext ctx = newTestContext(MockIdentity.ORG1_LO);
         ctx.getStub().setAccountStatus(Status.AUTHORIZED);
         assertThrows(UnauthorizedException.class, () -> PDP.canInitiateOrder(ctx, "Org2MSP"));
 
@@ -242,7 +242,7 @@ class PDPTest {
         ctx.getStub().setAccountStatus(Status.UNAUTHORIZED);
         assertThrows(UnauthorizedException.class, () -> PDP.canInitiateOrder(ctx, "Org2MSP"));
 
-        ctx.setClientIdentity(MockIdentity.ORG1_SO);
+        ctx.setClientIdentity(MockIdentity.ORG1_LO);
         ctx.getStub().setAccountStatus(Status.UNAUTHORIZED);
         assertThrows(UnauthorizedException.class, () -> PDP.canInitiateOrder(ctx, "Org2MSP"));
 
@@ -258,7 +258,7 @@ class PDPTest {
 
     @Test
     void canApproveOrder() {
-        MockContext ctx = newTestContext(MockIdentity.ORG1_SO);
+        MockContext ctx = newTestContext(MockIdentity.ORG1_LO);
         ctx.getStub().setAccountStatus(Status.AUTHORIZED);
         assertThrows(UnauthorizedException.class, () -> PDP.canApproveOrder(ctx, "Org2MSP"));
 
@@ -282,7 +282,7 @@ class PDPTest {
         ctx.getStub().setAccountStatus(Status.UNAUTHORIZED);
         assertThrows(UnauthorizedException.class, () -> PDP.canApproveOrder(ctx, "Org2MSP"));
 
-        ctx.setClientIdentity(MockIdentity.ORG1_SO);
+        ctx.setClientIdentity(MockIdentity.ORG1_LO);
         ctx.getStub().setAccountStatus(Status.UNAUTHORIZED);
         assertThrows(UnauthorizedException.class, () -> PDP.canApproveOrder(ctx, "Org2MSP"));
 
@@ -297,7 +297,7 @@ class PDPTest {
 
     @Test
     void canDenyOrder() {
-        MockContext ctx = newTestContext(MockIdentity.ORG1_SO);
+        MockContext ctx = newTestContext(MockIdentity.ORG1_LO);
         ctx.getStub().setAccountStatus(Status.AUTHORIZED);
         assertThrows(UnauthorizedException.class, () -> PDP.canDenyOrder(ctx, "Org2MSP"));
 
@@ -321,7 +321,7 @@ class PDPTest {
         ctx.getStub().setAccountStatus(Status.UNAUTHORIZED);
         assertThrows(UnauthorizedException.class, () -> PDP.canDenyOrder(ctx, "Org2MSP"));
 
-        ctx.setClientIdentity(MockIdentity.ORG1_SO);
+        ctx.setClientIdentity(MockIdentity.ORG1_LO);
         ctx.getStub().setAccountStatus(Status.UNAUTHORIZED);
         assertThrows(UnauthorizedException.class, () -> PDP.canDenyOrder(ctx, "Org2MSP"));
 
@@ -336,7 +336,7 @@ class PDPTest {
 
     @Test
     void canReturnLicense() {
-        MockContext ctx = newTestContext(MockIdentity.ORG1_SO);
+        MockContext ctx = newTestContext(MockIdentity.ORG1_LO);
         ctx.getStub().setAccountStatus(Status.AUTHORIZED);
         assertThrows(UnauthorizedException.class, () -> PDP.canReturnLicense(ctx, "Org2MSP"));
 
@@ -360,7 +360,7 @@ class PDPTest {
         ctx.getStub().setAccountStatus(Status.UNAUTHORIZED);
         assertThrows(UnauthorizedException.class, () -> PDP.canReturnLicense(ctx, "Org2MSP"));
 
-        ctx.setClientIdentity(MockIdentity.ORG1_SO);
+        ctx.setClientIdentity(MockIdentity.ORG1_LO);
         ctx.getStub().setAccountStatus(Status.UNAUTHORIZED);
         assertThrows(UnauthorizedException.class, () -> PDP.canReturnLicense(ctx, "Org2MSP"));
 
@@ -375,7 +375,7 @@ class PDPTest {
 
     @Test
     void canReadLicense() {
-        MockContext ctx = newTestContext(MockIdentity.ORG1_SO);
+        MockContext ctx = newTestContext(MockIdentity.ORG1_LO);
         ctx.getStub().setAccountStatus(Status.AUTHORIZED);
         assertThrows(UnauthorizedException.class, () -> PDP.canReadLicense(ctx, "Org2MSP"));
 
@@ -399,7 +399,7 @@ class PDPTest {
         ctx.getStub().setAccountStatus(Status.UNAUTHORIZED);
         assertThrows(UnauthorizedException.class, () -> PDP.canReadLicense(ctx, "Org2MSP"));
 
-        ctx.setClientIdentity(MockIdentity.ORG1_SO);
+        ctx.setClientIdentity(MockIdentity.ORG1_LO);
         ctx.getStub().setAccountStatus(Status.UNAUTHORIZED);
         assertThrows(UnauthorizedException.class, () -> PDP.canReadLicense(ctx, "Org2MSP"));
 
@@ -414,7 +414,7 @@ class PDPTest {
 
     @Test
     void canReadSWID() {
-        MockContext ctx = newTestContext(MockIdentity.ORG1_SO);
+        MockContext ctx = newTestContext(MockIdentity.ORG1_LO);
         ctx.getStub().setAccountStatus(Status.AUTHORIZED);
         assertDoesNotThrow(() -> PDP.canReadSWID(ctx, "Org2MSP"));
 
@@ -438,7 +438,7 @@ class PDPTest {
         ctx.getStub().setAccountStatus(Status.UNAUTHORIZED);
         assertThrows(UnauthorizedException.class, () -> PDP.canReadSWID(ctx, "Org2MSP"));
 
-        ctx.setClientIdentity(MockIdentity.ORG1_SO);
+        ctx.setClientIdentity(MockIdentity.ORG1_LO);
         ctx.getStub().setAccountStatus(Status.UNAUTHORIZED);
         assertThrows(UnauthorizedException.class, () -> PDP.canReadSWID(ctx, "Org2MSP"));
 
@@ -453,7 +453,7 @@ class PDPTest {
 
     @Test
     void canWriteSWID() {
-        MockContext ctx = newTestContext(MockIdentity.ORG1_SO);
+        MockContext ctx = newTestContext(MockIdentity.ORG1_LO);
         ctx.getStub().setAccountStatus(Status.AUTHORIZED);
         assertThrows(ChaincodeException.class, () -> PDP.canWriteSWID(ctx, "Org2MSP"));
 
@@ -477,7 +477,7 @@ class PDPTest {
         ctx.getStub().setAccountStatus(Status.UNAUTHORIZED);
         assertThrows(UnauthorizedException.class, () -> PDP.canWriteSWID(ctx, "Org2MSP"));
 
-        ctx.setClientIdentity(MockIdentity.ORG1_SO);
+        ctx.setClientIdentity(MockIdentity.ORG1_LO);
         ctx.getStub().setAccountStatus(Status.UNAUTHORIZED);
         assertThrows(UnauthorizedException.class, () -> PDP.canWriteSWID(ctx, "Org2MSP"));
 
