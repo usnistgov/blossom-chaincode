@@ -173,7 +173,7 @@ describe('test object serialization for method returns', () => {
 
     let assetId: string, orderId: string;
     beforeAll(async () => {
-        let response = await submitTx(users.org1.SO, "AddAsset", [], [ORG_1], {
+        let response = await submitTx(users.org1.LO, "AddAsset", [], [ORG_1], {
             "name": "asset1",
             "endDate": "2030-01-01 00:00:00",
             "licenses": [
@@ -224,7 +224,7 @@ describe('test object serialization for method returns', () => {
     });
 
     test("test AssetResponse[] serialization", async () => {
-        let response = await submitTx(users.org1.SO, "GetAssets", [], [ORG_1], {});
+        let response = await submitTx(users.org1.LO, "GetAssets", [], [ORG_1], {});
         response = response[0];
         expect(response.numAvailable).toBeDefined();
         expect(response.name).toBeDefined();
@@ -234,7 +234,7 @@ describe('test object serialization for method returns', () => {
     });
 
     test("test AssetDetailResponse serialization", async () => {
-        const response = await submitTx(users.org1.SO, "GetAsset", [], [ORG_1], {
+        const response = await submitTx(users.org1.LO, "GetAsset", [], [ORG_1], {
             "assetId": assetId
         });
         expect(response.numAvailable).toBeDefined();
@@ -265,7 +265,7 @@ describe('test object serialization for method returns', () => {
     });
 
     test("test IdResponse serialization", async () => {
-        const response = await submitTx(users.org1.SO, "AddAsset", [], [ORG_1], {
+        const response = await submitTx(users.org1.LO, "AddAsset", [], [ORG_1], {
             "name": "test_asset",
             "endDate": "2030-01-01 00:00:00",
             "licenses": [

@@ -181,7 +181,7 @@ describe("e2e",  () => {
     });
 
     test("asset", async () => {
-        let response = await submitTx(users.org1.SO, "AddAsset", [], [ORG_1], {
+        let response = await submitTx(users.org1.LO, "AddAsset", [], [ORG_1], {
             "name": "asset1",
             "endDate": "2030-01-01 00:00:00",
             "licenses": [
@@ -193,7 +193,7 @@ describe("e2e",  () => {
         });
         const assetId = response.id;
 
-        response = await submitTx(users.org1.SO, "GetAsset", [], [ORG_1], {
+        response = await submitTx(users.org1.LO, "GetAsset", [], [ORG_1], {
             "assetId": assetId
         })
 
@@ -206,7 +206,7 @@ describe("e2e",  () => {
         expect(response.totalAmount).toEqual(1);
         expect(response.availableLicenses).toEqual(["1"]);
 
-        await submitTx(users.org1.SO, "AddLicenses", [], [ORG_1], {
+        await submitTx(users.org1.LO, "AddLicenses", [], [ORG_1], {
             "assetId": assetId,
             "licenses": [
                 {
@@ -228,7 +228,7 @@ describe("e2e",  () => {
             ]
         });
 
-        response = await submitTx(users.org1.SO, "GetAsset", [], [ORG_1], {
+        response = await submitTx(users.org1.LO, "GetAsset", [], [ORG_1], {
             "assetId": assetId
         })
         expect(response.numAvailable).toEqual(5);
@@ -240,12 +240,12 @@ describe("e2e",  () => {
         expect(response.totalAmount).toEqual(5);
         expect(response.availableLicenses).toEqual(["1", "2", "3", "4", "5"]);
 
-        await submitTx(users.org1.SO, "RemoveLicenses", [], [ORG_1], {
+        await submitTx(users.org1.LO, "RemoveLicenses", [], [ORG_1], {
             "assetId": assetId,
             "licenses": ["5"]
         });
 
-        response = await submitTx(users.org1.SO, "GetAsset", [], [ORG_1], {
+        response = await submitTx(users.org1.LO, "GetAsset", [], [ORG_1], {
             "assetId": assetId
         })
         expect(response.numAvailable).toEqual(4);
@@ -257,12 +257,12 @@ describe("e2e",  () => {
         expect(response.totalAmount).toEqual(4);
         expect(response.availableLicenses).toEqual(["1", "2", "3", "4"]);
 
-        await submitTx(users.org1.SO, "UpdateEndDate", [], [ORG_1], {
+        await submitTx(users.org1.LO, "UpdateEndDate", [], [ORG_1], {
             "assetId": assetId,
             "newEndDate": "2040-01-01 00:00:00"
         });
 
-        response = await submitTx(users.org1.SO, "GetAsset", [], [ORG_1], {
+        response = await submitTx(users.org1.LO, "GetAsset", [], [ORG_1], {
             "assetId": assetId
         })
         expect(response.numAvailable).toEqual(4);
