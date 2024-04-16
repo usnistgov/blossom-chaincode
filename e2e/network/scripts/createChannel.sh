@@ -5,15 +5,13 @@
 . scripts/utils.sh
 
 CHANNEL_NAME="$1"
-LEDGER_TYPE="$2"
-DELAY="$3"
-MAX_RETRY="$4"
-VERBOSE="$5"
+DELAY="$2"
+MAX_RETRY="$3"
+VERBOSE="$4"
 : ${CHANNEL_NAME:="mychannel"}
 : ${DELAY:="3"}
 : ${MAX_RETRY:="5"}
 : ${VERBOSE:="false"}
-echo $LEDGER_TYPE
 
 if [ ! -d "channel-artifacts" ]; then
 	mkdir channel-artifacts
@@ -21,8 +19,7 @@ fi
 
 createChannelTx() {
 	set -x
-	echo "ledger type $LEDGER_TYPE"
-	configtxgen -profile TwoOrgsChannel -outputCreateChannelTx ./channel-artifacts/${CHANNEL_NAME}.tx -channelID $CHANNEL_NAME -ledgerType $LEDGER_TYPE
+	configtxgen -profile TwoOrgsChannel -outputCreateChannelTx ./channel-artifacts/${CHANNEL_NAME}.tx -channelID $CHANNEL_NAME
 	res=$?
 	{ set +x; } 2>/dev/null
   verifyResult $res "Failed to generate channel configuration transaction..."

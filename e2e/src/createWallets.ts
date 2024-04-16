@@ -38,15 +38,12 @@ async function createOrgUsers(orgUsers: OrgUsers) {
         {name: 'blossom.role', value: user.role, ecert: true},
     ]);
 
-    user = orgUsers.SA;
-    await registerAndEnrollUser(caClient, org.wallet, org.id, user.name, [
-        {name: 'blossom.role', value: user.role, ecert: true},
-    ]);
-
-    user = orgUsers.SO;
-    await registerAndEnrollUser(caClient, org.wallet, org.id, user.name, [
-        {name: 'blossom.role', value: user.role, ecert: true},
-    ]);
+    user = orgUsers.LO;
+    if (user != null) {
+        await registerAndEnrollUser(caClient, org.wallet, org.id, user.name, [
+            {name: 'blossom.role', value: user.role, ecert: true},
+        ]);
+    }
 }
 
 // create user identities in wallets

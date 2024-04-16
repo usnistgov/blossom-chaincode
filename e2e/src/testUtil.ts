@@ -13,8 +13,7 @@ export const org3WalletPath = path.join(__dirname, 'wallet', 'org3');
 export const AORole = 'Authorizing Official';
 export const ACQRole = 'Acquisition Officer';
 export const TPOCRole = 'Technical Point of Contact';
-export const SARole = 'System Administrator';
-export const SORole = 'System Owner';
+export const LORole = 'License Owner';
 
 export interface Orgs {
     org1: Org,
@@ -40,8 +39,7 @@ export interface OrgUsers {
     AO: User,
     ACQ: User,
     TPOC: User,
-    SA: User,
-    SO: User,
+    LO: User,
 }
 
 export interface User {
@@ -80,22 +78,19 @@ export async function buildTestUsers(): Promise<Users> {
             AO:     {org: orgs.org1, name: "org1_AO", role: AORole},
             ACQ:    {org: orgs.org1, name: "org1_ACQ", role: ACQRole},
             TPOC:   {org: orgs.org1, name: "org1_TPOC", role: TPOCRole},
-            SA:     {org: orgs.org1, name: "org1_SA", role: SARole},
-            SO:     {org: orgs.org1, name: "org1_SO", role: SORole},
+            LO:     {org: orgs.org1, name: "org1_LO", role: LORole},
         },
         org2: {
             AO:     {org: orgs.org2, name: "org2_AO", role: AORole},
             ACQ:    {org: orgs.org2, name: "org2_ACQ", role: ACQRole},
             TPOC:   {org: orgs.org2, name: "org2_TPOC", role: TPOCRole},
-            SA:     {org: orgs.org2, name: "org2_SA", role: SARole},
-            SO:     {org: orgs.org2, name: "org2_SO", role: SORole},
+            LO: null,
         },
         org3: {
             AO:     {org: orgs.org3, name: "org3_AO", role: AORole},
             ACQ:    {org: orgs.org3, name: "org3_ACQ", role: ACQRole},
             TPOC:   {org: orgs.org3, name: "org3_TPOC", role: TPOCRole},
-            SA:     {org: orgs.org3, name: "org3_SA", role: SARole},
-            SO:     {org: orgs.org3, name: "org3_SO", role: SORole},
+            LO: null,
         }
     }
 }
@@ -117,12 +112,12 @@ export const ORG_2 = "Org2MSP";
 export const ORG_3 = "Org3MSP";
 
 export async function submitTx(
-                        user: User,
-                        func: string,
-                        params: any[] = [],
-                        endorsingOrgs: string[] = [ORG_1],
-                        transientData: any = null,
-                        expectedErrMsg?: string) {
+    user: User,
+    func: string,
+    params: any[] = [],
+    endorsingOrgs: string[] = [ORG_1],
+    transientData: any = null,
+    expectedErrMsg?: string) {
     const contractName = getContractName(func);
     const chaincode = getChaincodeName(contractName);
 
