@@ -177,7 +177,6 @@ public class ATOContract implements ContractInterface {
 
         ATORequest(Context ctx) {
             Map<String, byte[]> t = ctx.getStub().getTransient();
-            System.out.println(t);
 
             byte[] memoBytes = t.get("memo");
             byte[] artBytes = t.get("artifacts");

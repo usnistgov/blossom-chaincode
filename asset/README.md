@@ -1,6 +1,6 @@
 # Asset Chaincode
 
-Chaincode functions to handle the Blossom asset use case.
+Chaincode functions to handle the Blossom asset use case. See design document: https://github.com/usnistgov/blossom-nist-member/wiki/BloSS@M-ATO-Process.
 
 ## Set ADMINMSP value
 In [./src/main/java/ngac/PolicyBuilder.java](./src/main/java/ngac/PolicyBuilder.java) set the value of the `ADMINMSP` constant

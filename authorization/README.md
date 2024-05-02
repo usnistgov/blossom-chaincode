@@ -1,6 +1,6 @@
 # Authorization Chaincode
 
-Chaincode functions to handle Blossom authorization.
+Chaincode functions to handle Blossom authorization. See design document: https://github.com/usnistgov/blossom-nist-member/wiki/BloSS@M:-Asset-Channel-Design.
 
 ## Set ADMINMSP value
 In [./authorization/src/main/resources/policy.pml](./authorization/src/main/resources/policy.pml) set the value of `ADMINMSP` to the MSPID of the Blossom Admin member.

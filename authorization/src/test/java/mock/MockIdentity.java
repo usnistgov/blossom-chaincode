@@ -50,17 +50,9 @@ public enum MockIdentity {
     private static byte[] buildSerializedIdentity(String certificate, String mspid) {
         final Identities.SerializedIdentity.Builder identity = Identities.SerializedIdentity.newBuilder();
         identity.setMspid(mspid);
-        final byte[] decodedCert = certificate.getBytes();//Base64.getDecoder().decode(certificate);
+        final byte[] decodedCert = certificate.getBytes();
         identity.setIdBytes(ByteString.copyFrom(decodedCert));
         final Identities.SerializedIdentity builtIdentity = identity.build();
         return builtIdentity.toByteArray();
     }
-
-    public static void main(String[] args) throws IOException, NoSuchAlgorithmException, OperatorCreationException, CertificateException {
-        MockChaincodeStub mockChaincodeStub = new MockChaincodeStub(ORG1_AO);
-        ClientIdentity clientIdentity = new ClientIdentity(mockChaincodeStub);
-        MockContext c = new MockContext(ORG2_NON_AO);
-        System.out.println(c.getClientIdentity().getMSPID());
-    }
-
 }
