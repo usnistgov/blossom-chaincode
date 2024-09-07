@@ -1,6 +1,6 @@
 package contract.response;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
+
 import org.hyperledger.fabric.contract.annotation.DataType;
 import org.hyperledger.fabric.contract.annotation.Property;
 
@@ -20,7 +20,7 @@ public class AssetResponse {
     @Property
     private String endDate;
 
-    public AssetResponse(@JsonProperty String id, @JsonProperty String name, @JsonProperty int numAvailable, @JsonProperty String startDate, @JsonProperty String endDate) {
+    public AssetResponse(String id, String name, int numAvailable, String startDate, String endDate) {
         this.id = id;
         this.name = name;
         this.numAvailable = numAvailable;

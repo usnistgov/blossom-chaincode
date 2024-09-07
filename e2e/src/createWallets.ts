@@ -1,6 +1,5 @@
-import {buildCAClient, enrollAdmin, registerAndEnrollUser} from "./utils/CAUtil";
-import {buildTestUsers, OrgUsers} from "./testUtil";
-
+import {buildTestUsers, OrgUsers} from './testUtil';
+import {buildCAClient, enrollAdmin, registerAndEnrollUser} from './utils/CAUtil';
 
 async function createUsers() {
     const users = await buildTestUsers();
@@ -15,9 +14,9 @@ async function createUsers() {
 }
 
 async function createOrgUsers(orgUsers: OrgUsers) {
-    let org = orgUsers.AO.org;
+    const org = orgUsers.AO.org;
 
-    let caClient = buildCAClient(org.ccp, org.caHostName);
+    const caClient = buildCAClient(org.ccp, org.caHostName);
 
     // enroll admin user
     await enrollAdmin(caClient, org.wallet, org.id);
@@ -39,7 +38,7 @@ async function createOrgUsers(orgUsers: OrgUsers) {
     ]);
 
     user = orgUsers.LO;
-    if (user != null) {
+    if (user !== null) {
         await registerAndEnrollUser(caClient, org.wallet, org.id, user.name, [
             {name: 'blossom.role', value: user.role, ecert: true},
         ]);
@@ -49,5 +48,5 @@ async function createOrgUsers(orgUsers: OrgUsers) {
 // create user identities in wallets
 createUsers()
     .then(() => {
-        console.log("users created");
+        console.log('users created');
     });

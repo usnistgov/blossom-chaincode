@@ -19,7 +19,8 @@ repositories {
 dependencies {
     implementation 'org.hyperledger.fabric-chaincode-java:fabric-chaincode-shim:2.2.+'
     implementation 'org.json:json:+'
-    implementation 'com.github.PM-Master:policy-machine-core:73de668'
+    implementation 'com.github.usnistgov:policy-machine-core:2f31b69'
+    implementation 'com.owlike:genson:1.5'
 
     testImplementation 'org.hyperledger.fabric-chaincode-java:fabric-chaincode-shim:2.2.+'
     testImplementation 'org.junit.jupiter:junit-jupiter-api:5.8.1'

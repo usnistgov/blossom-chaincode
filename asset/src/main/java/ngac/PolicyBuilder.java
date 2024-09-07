@@ -1,12 +1,12 @@
 package ngac;
 
+import gov.nist.csd.pm.impl.memory.pap.MemoryPAP;
 import gov.nist.csd.pm.pap.PAP;
-import gov.nist.csd.pm.pap.memory.MemoryPolicyStore;
-import gov.nist.csd.pm.policy.exceptions.PMException;
-import gov.nist.csd.pm.policy.model.access.AccessRightSet;
-import gov.nist.csd.pm.policy.model.access.UserContext;
-import gov.nist.csd.pm.policy.model.prohibition.ContainerCondition;
-import gov.nist.csd.pm.policy.model.prohibition.ProhibitionSubject;
+import gov.nist.csd.pm.pap.exception.PMException;
+import gov.nist.csd.pm.pap.graph.relationship.AccessRightSet;
+import gov.nist.csd.pm.pap.prohibition.ContainerCondition;
+import gov.nist.csd.pm.pap.prohibition.ProhibitionSubject;
+import gov.nist.csd.pm.pap.query.UserContext;
 import model.Status;
 import org.bouncycastle.asn1.x500.AttributeTypeAndValue;
 import org.bouncycastle.asn1.x500.RDN;
@@ -24,7 +24,7 @@ import java.security.cert.CertificateEncodingException;
 import java.security.cert.X509Certificate;
 import java.util.List;
 
-import static gov.nist.csd.pm.policy.model.access.AdminAccessRights.ALL_ACCESS_RIGHTS;
+import static gov.nist.csd.pm.pap.op.AdminAccessRights.ALL_ACCESS_RIGHTS;
 import static model.Status.*;
 
 public class PolicyBuilder {
@@ -78,17 +78,17 @@ public class PolicyBuilder {
         PAP pap = buildPolicyBase(ctx);
 
         // create asset target for decisions
-        pap.graph().createObject(ASSET_TARGET, "RBAC/asset", "Status/asset");
+        pap.modify().graph().createObject(ASSET_TARGET, List.of("RBAC/asset", "Status/asset"));
 
         // deny non adminmsp ACQ eleveated privs on assets
         String cidAccount = ctx.getClientIdentity().getMSPID();
         if (!cidAccount.equals(ADMINMSP)) {
-            pap.prohibitions().create(
+            pap.modify().prohibitions().createProhibition(
                     "deny non-adminmsp ACQ",
                     ProhibitionSubject.userAttribute(ACQ_OFFICER),
                     new AccessRightSet(READ_ASSET_DETAIL, ALLOCATE_LICENSE),
                     false,
-                    new ContainerCondition("RBAC/asset", false)
+                    List.of(new ContainerCondition("RBAC/asset", false))
             );
         }
 
@@ -102,14 +102,14 @@ public class PolicyBuilder {
         String targetAccountOA = accountOA(targetAccount);
 
         // create target account config
-        pap.graph().createObjectAttribute(targetAccountOA, "Account");
-        pap.graph().createObject(accountTarget, targetAccountOA, "RBAC/account", "Status/account");
+        pap.modify().graph().createObjectAttribute(targetAccountOA, List.of("Account"));
+        pap.modify().graph().createObject(accountTarget, List.of(targetAccountOA, "RBAC/account", "Status/account"));
 
         // if the targetAccountUA exists, then the request is from the same account, associate the ua and oa
         // otherwise do nothing as the accounts dont match, adminmsp will be taken care of in following block
         String targetAccountUA = accountUA(targetAccount);
-        if (pap.graph().nodeExists(targetAccountUA)) {
-            pap.graph().associate(targetAccountUA, targetAccountOA, new AccessRightSet(ALL_ACCESS_RIGHTS));
+        if (pap.query().graph().nodeExists(targetAccountUA)) {
+            pap.modify().graph().associate(targetAccountUA, targetAccountOA, new AccessRightSet(ALL_ACCESS_RIGHTS));
         }
 
         // if cid is adminmsp, grant access to target account oa and
@@ -117,14 +117,14 @@ public class PolicyBuilder {
         String cidAccount = ctx.getClientIdentity().getMSPID();
         if (cidAccount.equals(ADMINMSP)) {
             String cidAcctUA = accountUA(cidAccount);
-            pap.graph().associate(cidAcctUA, targetAccountOA, new AccessRightSet(ALL_ACCESS_RIGHTS));
+            pap.modify().graph().associate(cidAcctUA, targetAccountOA, new AccessRightSet(ALL_ACCESS_RIGHTS));
 
-            pap.prohibitions().create(
+            pap.modify().prohibitions().createProhibition(
                     "deny non-adminmsp ACQ",
                     ProhibitionSubject.userAttribute(ACQ_OFFICER),
                     new AccessRightSet(APPROVE_ORDER, DENY_ORDER),
                     false,
-                    new ContainerCondition("RBAC/account", false)
+                    List.of(new ContainerCondition("RBAC/account", false))
             );
         }
 
@@ -132,9 +132,9 @@ public class PolicyBuilder {
     }
 
     private static PAP buildPolicyBase(Context ctx) throws PMException {
-        PAP pap = new PAP(new MemoryPolicyStore());
+        PAP pap = new MemoryPAP();
 
-        pap.graph().setResourceAccessRights(RESOURCE_ARSET);
+        pap.modify().operations().setResourceOperations(RESOURCE_ARSET);
 
         // build attribute hierarchy
         buildAttributes(pap);
@@ -142,13 +142,13 @@ public class PolicyBuilder {
         // build account ua config
         String cidAccount = ctx.getClientIdentity().getMSPID();
         String accountUA = accountUA(cidAccount);
-        pap.graph().createUserAttribute(accountUA, "Account");
+        pap.modify().graph().createUserAttribute(accountUA, List.of("Account"));
 
         // create user and assign to attributes
         UserContext userContext = getUserContextFromCID(ctx.getClientIdentity());
         String role = getRole(ctx, cidAccount);
         Status status = getAccountStatus(ctx);
-        pap.graph().createUser(userContext.getUser(), role, accountUA, status.toString());
+        pap.modify().graph().createUser(userContext.getUser(), List.of(role, accountUA, status.toString()));
 
         log.info("building policy for user " + userContext.getUser() + " with attributes [" + role + ", " + accountUA + ", " + status + "]");
 
@@ -157,33 +157,33 @@ public class PolicyBuilder {
 
     private static void buildAttributes(PAP pap) throws PMException {
         // RBAC PC
-        pap.graph().createPolicyClass("RBAC");
+        pap.modify().graph().createPolicyClass("RBAC");
 
-        pap.graph().createObjectAttribute("RBAC/asset", "RBAC");
-        pap.graph().createObjectAttribute("RBAC/account", "RBAC");
+        pap.modify().graph().createObjectAttribute("RBAC/asset", List.of("RBAC"));
+        pap.modify().graph().createObjectAttribute("RBAC/account", List.of("RBAC"));
 
-        pap.graph().createUserAttribute(LICENSE_OWNER, "RBAC");
-        pap.graph().createUserAttribute(ACQ_OFFICER, "RBAC");
-        pap.graph().createUserAttribute(TPOC, "RBAC");
+        pap.modify().graph().createUserAttribute(LICENSE_OWNER, List.of("RBAC"));
+        pap.modify().graph().createUserAttribute(ACQ_OFFICER, List.of("RBAC"));
+        pap.modify().graph().createUserAttribute(TPOC, List.of("RBAC"));
 
         // LO
-        pap.graph().associate(LICENSE_OWNER, "RBAC/asset", new AccessRightSet(
+        pap.modify().graph().associate(LICENSE_OWNER, "RBAC/asset", new AccessRightSet(
                 READ_ASSETS,
                 WRITE_ASSET,
                 READ_ASSET_DETAIL
         ));
-        pap.graph().associate(LICENSE_OWNER, "RBAC/account", new AccessRightSet(
+        pap.modify().graph().associate(LICENSE_OWNER, "RBAC/account", new AccessRightSet(
                 READ_ORDER,
                 READ_SWID
         ));
 
         // ACQ
-        pap.graph().associate(ACQ_OFFICER, "RBAC/asset", new AccessRightSet(
+        pap.modify().graph().associate(ACQ_OFFICER, "RBAC/asset", new AccessRightSet(
                 READ_ASSETS,
                 READ_ASSET_DETAIL,
                 ALLOCATE_LICENSE
         ));
-        pap.graph().associate(ACQ_OFFICER, "RBAC/account", new AccessRightSet(
+        pap.modify().graph().associate(ACQ_OFFICER, "RBAC/account", new AccessRightSet(
                 READ_ORDER,
                 APPROVE_ORDER,
                 DENY_ORDER,
@@ -192,8 +192,8 @@ public class PolicyBuilder {
         ));
 
         // TPOC
-        pap.graph().associate(TPOC, "RBAC/asset", new AccessRightSet(READ_ASSETS));
-        pap.graph().associate(TPOC, "RBAC/account", new AccessRightSet(
+        pap.modify().graph().associate(TPOC, "RBAC/asset", new AccessRightSet(READ_ASSETS));
+        pap.modify().graph().associate(TPOC, "RBAC/account", new AccessRightSet(
                 INITIATE_ORDER,
                 READ_ORDER,
                 READ_SWID,
@@ -203,19 +203,19 @@ public class PolicyBuilder {
         ));
 
         // Account PC
-        pap.graph().createPolicyClass("Account");
+        pap.modify().graph().createPolicyClass("Account");
 
         // Status PC
-        pap.graph().createPolicyClass("Status");
-        pap.graph().createUserAttribute(AUTHORIZED.toString(), "Status");
-        pap.graph().createUserAttribute(PENDING.toString(), "Status");
-        pap.graph().createUserAttribute(UNAUTHORIZED.toString(), PENDING.toString());
+        pap.modify().graph().createPolicyClass("Status");
+        pap.modify().graph().createUserAttribute(AUTHORIZED.toString(), List.of("Status"));
+        pap.modify().graph().createUserAttribute(PENDING.toString(), List.of("Status"));
+        pap.modify().graph().createUserAttribute(UNAUTHORIZED.toString(), List.of(PENDING.toString()));
 
-        pap.graph().createObjectAttribute("Status/account", "Status");
-        pap.graph().createObjectAttribute("Status/asset", "Status");
+        pap.modify().graph().createObjectAttribute("Status/account", List.of("Status"));
+        pap.modify().graph().createObjectAttribute("Status/asset", List.of("Status"));
 
-        pap.graph().associate(AUTHORIZED.name(), "Status/account", new AccessRightSet(ALL_ACCESS_RIGHTS));
-        pap.graph().associate(AUTHORIZED.name(), "Status/asset", new AccessRightSet(ALL_ACCESS_RIGHTS));
+        pap.modify().graph().associate(AUTHORIZED.name(), "Status/account", new AccessRightSet(ALL_ACCESS_RIGHTS));
+        pap.modify().graph().associate(AUTHORIZED.name(), "Status/asset", new AccessRightSet(ALL_ACCESS_RIGHTS));
     }
 
     public static UserContext getUserContextFromCID(ClientIdentity cid) {

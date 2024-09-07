@@ -1,11 +1,12 @@
 package ngac;
 
 import gov.nist.csd.pm.pap.PAP;
-import gov.nist.csd.pm.pap.memory.MemoryPolicyStore;
-import gov.nist.csd.pm.policy.exceptions.PMException;
-import gov.nist.csd.pm.policy.model.access.UserContext;
-import gov.nist.csd.pm.policy.pml.value.StringValue;
-import gov.nist.csd.pm.policy.serialization.json.JSONSerializer;
+
+import gov.nist.csd.pm.pap.exception.PMException;
+import gov.nist.csd.pm.pap.pml.context.ExecutionContext;
+import gov.nist.csd.pm.pap.pml.executable.operation.PMLOperation;
+import gov.nist.csd.pm.pap.query.UserContext;
+import gov.nist.csd.pm.pap.serialization.json.JSONSerializer;
 import mock.MockContext;
 import mock.MockIdentity;
 import model.Status;
@@ -15,13 +16,13 @@ import org.junit.jupiter.api.Test;
 
 import java.nio.charset.StandardCharsets;
 import java.time.Instant;
+import java.util.Map;
 
 import static mock.MockContextUtil.*;
 import static mock.MockOrgs.*;
 import static model.Status.AUTHORIZED;
 import static model.Status.PENDING;
-import static ngac.BlossomPDP.getUserCtxFromRequest;
-import static ngac.BlossomPDP.loadPolicy;
+import static ngac.BlossomPDP.*;
 import static org.junit.jupiter.api.Assertions.*;
 
 class BlossomPDPTest {
@@ -29,27 +30,16 @@ class BlossomPDPTest {
     BlossomPDP pdp = new BlossomPDP();
 
     private static void updateAccountStatus(MockContext ctx, String mspid, Status status) throws PMException {
-        MemoryPolicyStore memoryPolicyStore = loadPolicy(ctx, getUserCtxFromRequest(ctx));
+        UserContext userCtx = getUserCtxFromRequest(ctx);
+        PAP pap = getPAPState(ctx, userCtx);
 
-        PAP pap = new PAP(memoryPolicyStore);
-        pap.executePMLFunction(new UserContext("blossom admin"), "updateAccountStatus",
-                               new StringValue(mspid), new StringValue(status.toString())
-        );
+        ExecutionContext executionContext = new ExecutionContext(userCtx, pap);
+        PMLOperation pmlOp = (PMLOperation) pap.query().operations().getAdminOperation("updateAccountStatus");
+        pmlOp.setCtx(executionContext);
+        pmlOp.withOperands(Map.of("accountId", mspid, "status", status.toString()))
+                .execute(pap);
 
-        ctx.getStub().putState(
-                "policy",
-                memoryPolicyStore.serialize(new JSONSerializer()).getBytes(StandardCharsets.UTF_8)
-        );
-    }
-
-    @Test
-    void testGetAdminMSPID() throws Exception {
-        MockContext ctx = newTestMockContextWithAccounts(MockIdentity.ORG1_AO);
-        BlossomPDP pdp = new BlossomPDP();
-        String actual = pdp.getADMINMSP(ctx);
-        assertEquals(ORG1_MSP, actual);
-        actual = pdp.getADMINMSP(ctx);
-        assertEquals(ORG1_MSP, actual);
+        ctx.getStub().putState("policy", pap.serialize(new JSONSerializer()).getBytes(StandardCharsets.UTF_8));
     }
 
     @Nested
@@ -444,8 +434,10 @@ class BlossomPDPTest {
             pdp.initiateVote(ctx, ORG3_MSP);
 
             ctx.setClientIdentity(MockIdentity.ORG2_AO);
-            ChaincodeException e = assertThrows(ChaincodeException.class, () -> pdp.certifyVote(ctx, ORG3_MSP, AUTHORIZED.name(),
-                                                                                                false));
+            ChaincodeException e = assertThrows(
+                    ChaincodeException.class,
+                    () -> pdp.certifyVote(ctx, ORG3_MSP, AUTHORIZED.name(), false)
+            );
             assertEquals("cid is not authorized to certify a vote on Org3MSP", e.getMessage());
         }
 

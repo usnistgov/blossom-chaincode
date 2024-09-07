@@ -1,6 +1,5 @@
 package model;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import org.apache.commons.lang3.SerializationUtils;
 import org.hyperledger.fabric.contract.annotation.DataType;
 import org.hyperledger.fabric.contract.annotation.Property;
@@ -19,10 +18,10 @@ public class SWID implements Serializable {
     @Property
     private String licenseId;
 
-    public SWID(@JsonProperty String primaryTag,
-                @JsonProperty String xml,
-                @JsonProperty String orderId,
-                @JsonProperty String licenseId) {
+    public SWID( String primaryTag,
+                 String xml,
+                 String orderId,
+                 String licenseId) {
         this.primaryTag = primaryTag;
         this.xml = xml;
         this.orderId = orderId;

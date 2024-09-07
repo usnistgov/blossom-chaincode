@@ -1,6 +1,6 @@
 package model;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
+
 import org.hyperledger.fabric.contract.annotation.DataType;
 import org.hyperledger.fabric.contract.annotation.Property;
 
@@ -22,7 +22,7 @@ public class MOU implements Serializable {
     public MOU() {
     }
 
-    public MOU(@JsonProperty String text, @JsonProperty int version, @JsonProperty String timestamp) {
+    public MOU(String text, int version, String timestamp) {
         this.text = text;
         this.version = version;
         this.timestamp = timestamp;

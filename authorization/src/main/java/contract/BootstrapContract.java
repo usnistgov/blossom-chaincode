@@ -1,8 +1,6 @@
 package contract;
 
 import gov.nist.csd.pm.pap.PAP;
-import gov.nist.csd.pm.policy.exceptions.PMException;
-import gov.nist.csd.pm.policy.serialization.json.JSONSerializer;
 import model.Account;
 import model.Status;
 import ngac.BlossomPDP;
@@ -56,16 +54,8 @@ public class BootstrapContract implements ContractInterface {
             throw new ChaincodeException("Bootstrap already called");
         }
 
-        // get the policy file defined in PML
-        InputStream resourceAsStream = getClass().getClassLoader().getResourceAsStream("policy.pml");
-        if (resourceAsStream == null) {
-            throw new ChaincodeException("could not read policy file");
-        }
-
         try {
-            String pml = IOUtils.toString(resourceAsStream, StandardCharsets.UTF_8);
-
-            new BlossomPDP().bootstrap(ctx, pml);
+            new BlossomPDP().bootstrap(ctx);
         } catch (IOException e) {
             throw new ChaincodeException(e);
         }

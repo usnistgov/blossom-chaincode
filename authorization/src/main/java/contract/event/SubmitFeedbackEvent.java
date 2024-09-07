@@ -1,6 +1,5 @@
 package contract.event;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import org.hyperledger.fabric.contract.annotation.DataType;
 import org.hyperledger.fabric.contract.annotation.Property;
 
@@ -18,7 +17,7 @@ public class SubmitFeedbackEvent implements Serializable {
     public SubmitFeedbackEvent() {
     }
 
-    public SubmitFeedbackEvent(@JsonProperty String targetAccountId, @JsonProperty String commenterAccountId) {
+    public SubmitFeedbackEvent(String targetAccountId, String commenterAccountId) {
         this.commenterAccountId = commenterAccountId;
         this.targetAccountId = targetAccountId;
     }

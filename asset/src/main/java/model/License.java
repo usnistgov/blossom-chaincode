@@ -1,7 +1,5 @@
 package model;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.databind.annotation.JsonAppend;
 import org.apache.commons.lang3.SerializationUtils;
 import org.hyperledger.fabric.contract.annotation.DataType;
 import org.hyperledger.fabric.contract.annotation.Property;
@@ -19,7 +17,7 @@ public class License implements Serializable {
     @Property
     private Allocated allocated;
 
-    public License(@JsonProperty String id, @JsonProperty String salt, @JsonProperty Allocated allocated) {
+    public License( String id,  String salt,  Allocated allocated) {
         this.id = id;
         this.salt = salt;
         this.allocated = allocated;

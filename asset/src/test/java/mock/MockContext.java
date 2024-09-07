@@ -1,22 +1,13 @@
 package mock;
 
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
-import contract.request.AddAssetRequest;
-import contract.request.AssetIdRequest;
-import contract.request.UpdateEndDateRequest;
-import contract.request.OrderIdAndAccountRequest;
-import org.apache.commons.lang3.SerializationUtils;
 import org.hyperledger.fabric.contract.ClientIdentity;
 import org.hyperledger.fabric.contract.Context;
 
 import java.io.IOException;
-import java.io.Serializable;
 import java.nio.charset.StandardCharsets;
 import java.security.cert.CertificateException;
 import java.time.Instant;
-import java.util.HashMap;
 import java.util.Map;
 
 public class MockContext extends Context {

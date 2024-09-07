@@ -1,6 +1,6 @@
 package contract.response;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
+
 import org.hyperledger.fabric.contract.annotation.DataType;
 import org.hyperledger.fabric.contract.annotation.Property;
 
@@ -16,7 +16,7 @@ public class AllocateLicensesResponse {
     @Property
     private List<String> licenses;
 
-    public AllocateLicensesResponse(@JsonProperty String orderId, @JsonProperty String account, @JsonProperty List<String> licenses) {
+    public AllocateLicensesResponse(String orderId, String account, List<String> licenses) {
         this.orderId = orderId;
         this.account = account;
         this.licenses = licenses;

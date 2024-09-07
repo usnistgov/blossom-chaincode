@@ -1,10 +1,9 @@
 package ngac;
 
 import gov.nist.csd.pm.pap.PAP;
-import gov.nist.csd.pm.pdp.reviewer.PolicyReviewer;
-import gov.nist.csd.pm.policy.exceptions.PMException;
-import gov.nist.csd.pm.policy.model.access.AccessRightSet;
-import gov.nist.csd.pm.policy.model.access.UserContext;
+import gov.nist.csd.pm.pap.exception.PMException;
+import gov.nist.csd.pm.pap.graph.relationship.AccessRightSet;
+import gov.nist.csd.pm.pap.query.UserContext;
 import mock.MockContext;
 import mock.MockIdentity;
 import model.Status;
@@ -133,9 +132,10 @@ class PolicyBuilderTest {
 
     private void test(Context ctx, PAP pap, String target, AccessRightSet arset) throws PMException {
         UserContext user = PolicyBuilder.getUserContextFromCID(ctx.getClientIdentity());
-        Map<String, AccessRightSet> map = new PolicyReviewer(pap)
+        Map<String, AccessRightSet> map = pap
+                .query()
                 .access()
-                .buildCapabilityList(user);
+                .computeCapabilityList(user);
 
         assertEquals(arset, map.get(target));
     }
