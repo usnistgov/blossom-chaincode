@@ -1,6 +1,6 @@
 package model;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
+
 import org.hyperledger.fabric.contract.Context;
 import org.hyperledger.fabric.contract.annotation.DataType;
 import org.hyperledger.fabric.contract.annotation.Property;
@@ -38,9 +38,9 @@ public class ATO implements Serializable {
 
     }
 
-    public ATO(@JsonProperty String id, @JsonProperty String creationTimestamp, @JsonProperty String lastUpdatedTimestamp,
-               @JsonProperty int version, @JsonProperty String memo, @JsonProperty String artifacts,
-               @JsonProperty List<Feedback> feedback) {
+    public ATO(String id, String creationTimestamp, String lastUpdatedTimestamp,
+               int version, String memo, String artifacts,
+               List<Feedback> feedback) {
         this.id = id;
         this.creationTimestamp = creationTimestamp;
         this.lastUpdatedTimestamp = lastUpdatedTimestamp;

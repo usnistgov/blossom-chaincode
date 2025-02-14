@@ -2,10 +2,9 @@ package ngac;
 
 import contract.response.AssetDetailResponse;
 import gov.nist.csd.pm.pap.PAP;
-import gov.nist.csd.pm.pdp.reviewer.PolicyReviewer;
-import gov.nist.csd.pm.policy.exceptions.PMException;
-import gov.nist.csd.pm.policy.model.access.AccessRightSet;
-import gov.nist.csd.pm.policy.model.access.UserContext;
+import gov.nist.csd.pm.pap.exception.PMException;
+import gov.nist.csd.pm.pap.graph.relationship.AccessRightSet;
+import gov.nist.csd.pm.pap.query.UserContext;
 import org.hyperledger.fabric.Logger;
 import org.hyperledger.fabric.contract.Context;
 import org.hyperledger.fabric.shim.ChaincodeException;
@@ -15,6 +14,16 @@ import static ngac.PolicyBuilder.accountTarget;
 
 public class PDP {
     private static final Logger log = Logger.getLogger("PDP");
+
+    public static String[] getAllRoles() {
+        return new String[]{
+               ACQ_OFFICER, TPOC, LICENSE_OWNER
+        };
+    }
+
+    public static String[] getAllPrivileges() {
+        return RESOURCE_ARSET.toArray(String[]::new);
+    }
 
     public static void canWriteAsset(Context ctx) {
         checkAssetPrivileges(ctx, WRITE_ASSET);
@@ -86,9 +95,8 @@ public class PDP {
         try {
             UserContext userContextFromCID = getUserContextFromCID(ctx.getClientIdentity());
             PAP pap = PolicyBuilder.buildPolicyForAssetDecision(ctx);
-            PolicyReviewer policyReviewer = new PolicyReviewer(pap);
-
-            AccessRightSet privs = policyReviewer
+            AccessRightSet privs = pap
+                    .query()
                     .access()
                     .computePrivileges(userContextFromCID, ASSET_TARGET);
             log.info("user " + userContextFromCID.getUser() + " has privileges " + privs);
@@ -105,9 +113,8 @@ public class PDP {
         try {
             UserContext userContextFromCID = getUserContextFromCID(ctx.getClientIdentity());
             PAP pap = PolicyBuilder.buildPolicyForAccountDecision(ctx, account);
-            PolicyReviewer policyReviewer = new PolicyReviewer(pap);
-
-            AccessRightSet privs = policyReviewer
+            AccessRightSet privs = pap
+                    .query()
                     .access()
                     .computePrivileges(userContextFromCID, accountTarget(account));
             log.info("user " + userContextFromCID.getUser() + " has privileges " + privs);

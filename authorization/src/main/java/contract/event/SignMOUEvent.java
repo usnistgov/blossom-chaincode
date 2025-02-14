@@ -1,6 +1,5 @@
 package contract.event;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import org.hyperledger.fabric.contract.annotation.DataType;
 import org.hyperledger.fabric.contract.annotation.Property;
 
@@ -18,7 +17,7 @@ public class SignMOUEvent implements Serializable {
     public SignMOUEvent() {
     }
 
-    public SignMOUEvent(@JsonProperty String account, @JsonProperty int version) {
+    public SignMOUEvent(String account, int version) {
         this.account = account;
         this.version = version;
     }

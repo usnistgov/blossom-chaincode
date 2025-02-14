@@ -1,15 +1,18 @@
 package contract;
 
-import gov.nist.csd.pm.pap.memory.MemoryPolicyStore;
-import gov.nist.csd.pm.policy.exceptions.PMException;
-import gov.nist.csd.pm.policy.model.access.UserContext;
-import gov.nist.csd.pm.policy.serialization.json.JSONDeserializer;
+import gov.nist.csd.pm.impl.memory.pap.MemoryPAP;
+import gov.nist.csd.pm.pap.PAP;
+import gov.nist.csd.pm.pap.exception.PMException;
+import gov.nist.csd.pm.pap.pml.value.StringValue;
+import gov.nist.csd.pm.pap.query.UserContext;
+import gov.nist.csd.pm.pap.serialization.json.JSONDeserializer;
 import mock.MockContext;
 import mock.MockContextUtil;
 import mock.MockEvent;
 import mock.MockIdentity;
 import model.Status;
 import model.Vote;
+import ngac.BlossomPDP;
 import org.apache.commons.lang3.SerializationUtils;
 import org.hyperledger.fabric.shim.ChaincodeException;
 import org.junit.jupiter.api.Nested;
@@ -17,6 +20,7 @@ import org.junit.jupiter.api.Test;
 
 import java.nio.charset.StandardCharsets;
 import java.time.Instant;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
@@ -641,10 +645,11 @@ class VoteContractTest {
         String json = new String(policy, StandardCharsets.UTF_8);
 
         try {
-            MemoryPolicyStore memoryPolicyStore = new MemoryPolicyStore();
-            memoryPolicyStore.deserialize(new UserContext(""), json, new JSONDeserializer());
+            PAP pap = new MemoryPAP();
+            pap.setPMLConstants(Map.of("ADMINMSP", new StringValue(BlossomPDP.ADMINMSP)));
+            pap.deserialize(new UserContext(""), json, new JSONDeserializer());
 
-            List<String> parents = memoryPolicyStore.graph().getParents(targetMember + " users");
+            Collection<String> parents = pap.query().graph().getDescendants(targetMember + " users");
             assertTrue(parents.contains(expected.toString().toLowerCase()));
         } catch (PMException e) {
             throw new ChaincodeException(e);

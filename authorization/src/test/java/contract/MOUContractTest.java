@@ -1,7 +1,8 @@
 package contract;
 
 import contract.event.SignMOUEvent;
-import gov.nist.csd.pm.policy.exceptions.PMException;
+
+import gov.nist.csd.pm.pap.exception.PMException;
 import mock.MockContext;
 import mock.MockContextUtil;
 import mock.MockEvent;

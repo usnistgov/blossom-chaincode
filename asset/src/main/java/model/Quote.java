@@ -1,6 +1,6 @@
 package model;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
+
 import org.hyperledger.fabric.contract.annotation.DataType;
 import org.hyperledger.fabric.contract.annotation.Property;
 
@@ -24,13 +24,13 @@ public class Quote {
     @Property
     private double price;
 
-    public Quote(@JsonProperty String id,
-                 @JsonProperty String orderId,
-                 @JsonProperty String timestamp,
-                 @JsonProperty String assetId,
-                 @JsonProperty int amount,
-                 @JsonProperty int duration,
-                 @JsonProperty double price) {
+    public Quote( String id,
+                  String orderId,
+                  String timestamp,
+                  String assetId,
+                  int amount,
+                  int duration,
+                  double price) {
         this.id = id;
         this.orderId = orderId;
         this.timestamp = timestamp;

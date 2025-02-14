@@ -1,6 +1,6 @@
 package model;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
+
 import org.hyperledger.fabric.contract.annotation.DataType;
 import org.hyperledger.fabric.contract.annotation.Property;
 
@@ -12,7 +12,7 @@ public class LicenseWithExpiration {
     @Property
     private String expiration;
 
-    public LicenseWithExpiration(@JsonProperty String licenseId, @JsonProperty String expiration) {
+    public LicenseWithExpiration( String licenseId,  String expiration) {
         this.licenseId = licenseId;
         this.expiration = expiration;
     }

@@ -1,6 +1,6 @@
 package model;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
+
 import org.hyperledger.fabric.contract.annotation.DataType;
 import org.hyperledger.fabric.contract.annotation.Property;
 
@@ -72,15 +72,15 @@ public class Vote implements Serializable {
     public Vote() {
     }
 
-    public Vote(@JsonProperty String id,
-                @JsonProperty String initiatingAccountId,
-                @JsonProperty String targetAccountId,
-                @JsonProperty Status statusChange,
-                @JsonProperty String reason,
-                @JsonProperty Threshold threshold,
-                @JsonProperty List<String> voters,
-                @JsonProperty Map<String, Boolean> submittedVotes,
-                @JsonProperty Result result) {
+    public Vote(String id,
+                String initiatingAccountId,
+                String targetAccountId,
+                Status statusChange,
+                String reason,
+                Threshold threshold,
+                List<String> voters,
+                Map<String, Boolean> submittedVotes,
+                Result result) {
         this.id = id;
         this.initiatingAccountId = initiatingAccountId;
         this.targetAccountId = targetAccountId;

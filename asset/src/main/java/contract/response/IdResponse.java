@@ -1,6 +1,6 @@
 package contract.response;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
+
 import org.hyperledger.fabric.contract.annotation.DataType;
 import org.hyperledger.fabric.contract.annotation.Property;
 
@@ -12,7 +12,7 @@ public class IdResponse {
     @Property
     private String id;
 
-    public IdResponse(@JsonProperty String id) {
+    public IdResponse(String id) {
         this.id = id;
     }
 

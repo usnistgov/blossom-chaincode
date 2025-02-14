@@ -1,6 +1,5 @@
 package contract.response;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import model.License;
 import model.LicenseWithExpiration;
 import org.hyperledger.fabric.contract.annotation.DataType;
@@ -30,14 +29,14 @@ public class AssetDetailResponse {
     @Property
     private Map<String, Map<String, Set<LicenseWithExpiration>>> allocatedLicenses;
 
-    public AssetDetailResponse(@JsonProperty String id,
-                               @JsonProperty String name,
-                               @JsonProperty int numAvailable,
-                               @JsonProperty String startDate,
-                               @JsonProperty String endDate,
-                               @JsonProperty Integer totalAmount,
-                               @JsonProperty Set<String> availableLicenses,
-                               @JsonProperty Map<String, Map<String, Set<LicenseWithExpiration>>> allocatedLicenses) {
+    public AssetDetailResponse(String id,
+                               String name,
+                               int numAvailable,
+                               String startDate,
+                               String endDate,
+                               Integer totalAmount,
+                               Set<String> availableLicenses,
+                               Map<String, Map<String, Set<LicenseWithExpiration>>> allocatedLicenses) {
         this.id = id;
         this.name = name;
         this.numAvailable = numAvailable;

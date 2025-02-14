@@ -1,6 +1,6 @@
 package model;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
+
 import org.hyperledger.fabric.contract.annotation.DataType;
 import org.hyperledger.fabric.contract.annotation.Property;
 
@@ -22,7 +22,7 @@ public class Feedback implements Serializable {
     public Feedback() {
     }
 
-    public Feedback(@JsonProperty int atoVersion, @JsonProperty String accountId, @JsonProperty String comments) {
+    public Feedback(int atoVersion, String accountId, String comments) {
         this.atoVersion = atoVersion;
         this.accountId = accountId;
         this.comments = comments;

@@ -1,6 +1,5 @@
 package contract.event;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import org.hyperledger.fabric.contract.annotation.DataType;
 import org.hyperledger.fabric.contract.annotation.Property;
 
@@ -15,7 +14,7 @@ public class ATOEvent implements Serializable {
     public ATOEvent() {
     }
 
-    public ATOEvent(@JsonProperty String account) {
+    public ATOEvent(String account) {
         this.account = account;
     }
 

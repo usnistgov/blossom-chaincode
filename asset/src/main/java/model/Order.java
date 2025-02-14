@@ -1,6 +1,6 @@
 package model;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
+
 import org.apache.commons.lang3.SerializationUtils;
 import org.hyperledger.fabric.contract.annotation.DataType;
 import org.hyperledger.fabric.contract.annotation.Property;
@@ -45,19 +45,19 @@ public class Order implements Serializable {
     @Property
     private List<String> licenses;
 
-    public Order(@JsonProperty String id,
-                 @JsonProperty String account,
-                 @JsonProperty Status status,
-                 @JsonProperty String initiationDate,
-                 @JsonProperty String approvalDate,
-                 @JsonProperty String allocatedDate,
-                 @JsonProperty String latestRenewalDate,
-                 @JsonProperty String assetId,
-                 @JsonProperty int amount,
-                 @JsonProperty int duration,
-                 @JsonProperty double price,
-                 @JsonProperty String expiration,
-                 @JsonProperty List<String> licenses) {
+    public Order( String id,
+                  String account,
+                  Status status,
+                  String initiationDate,
+                  String approvalDate,
+                  String allocatedDate,
+                  String latestRenewalDate,
+                  String assetId,
+                  int amount,
+                  int duration,
+                  double price,
+                  String expiration,
+                  List<String> licenses) {
         this.id = id;
         this.account = account;
         this.status = status;

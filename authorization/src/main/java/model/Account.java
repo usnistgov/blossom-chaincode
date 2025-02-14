@@ -1,6 +1,6 @@
 package model;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
+
 import org.hyperledger.fabric.contract.annotation.DataType;
 import org.hyperledger.fabric.contract.annotation.Property;
 
@@ -41,7 +41,7 @@ public class Account implements Serializable {
     public Account() {
     }
 
-    public Account(@JsonProperty String id, @JsonProperty Status status, @JsonProperty int mouVersion, @JsonProperty boolean joined) {
+    public Account(String id, Status status, int mouVersion, boolean joined) {
         this.id = id;
         this.status = status;
         this.mouVersion = mouVersion;

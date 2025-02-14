@@ -1,19 +1,21 @@
 package ngac;
 
+import gov.nist.csd.pm.impl.memory.pap.MemoryPAP;
 import gov.nist.csd.pm.pap.PAP;
-import gov.nist.csd.pm.pap.memory.MemoryPolicyStore;
-import gov.nist.csd.pm.pdp.reviewer.PolicyReviewer;
-import gov.nist.csd.pm.policy.Policy;
-import gov.nist.csd.pm.policy.exceptions.PMException;
-import gov.nist.csd.pm.policy.model.access.AccessRightSet;
-import gov.nist.csd.pm.policy.model.access.UserContext;
-import gov.nist.csd.pm.policy.model.audit.Explain;
-import gov.nist.csd.pm.policy.model.graph.dag.walker.bfs.BreadthFirstGraphWalker;
-import gov.nist.csd.pm.policy.model.graph.nodes.NodeType;
-import gov.nist.csd.pm.policy.pml.value.StringValue;
-import gov.nist.csd.pm.policy.serialization.json.JSONDeserializer;
-import gov.nist.csd.pm.policy.serialization.json.JSONSerializer;
-import gov.nist.csd.pm.policy.serialization.pml.PMLDeserializer;
+import gov.nist.csd.pm.pap.exception.PMException;
+import gov.nist.csd.pm.pap.graph.node.Node;
+import gov.nist.csd.pm.pap.graph.relationship.AccessRightSet;
+import gov.nist.csd.pm.pap.pml.value.StringValue;
+import gov.nist.csd.pm.pap.query.UserContext;
+import gov.nist.csd.pm.pap.query.explain.Explain;
+import gov.nist.csd.pm.pap.serialization.json.JSONDeserializer;
+import gov.nist.csd.pm.pap.serialization.json.JSONSerializer;
+import gov.nist.csd.pm.pap.serialization.pml.PMLDeserializer;
+import gov.nist.csd.pm.pdp.AdminAdjudicationResponse;
+import gov.nist.csd.pm.pdp.Decision;
+import gov.nist.csd.pm.pdp.PDP;
+import gov.nist.csd.pm.pdp.exception.UnauthorizedException;
+import org.apache.commons.io.IOUtils;
 import org.bouncycastle.asn1.x500.AttributeTypeAndValue;
 import org.bouncycastle.asn1.x500.RDN;
 import org.bouncycastle.asn1.x500.X500Name;
@@ -24,52 +26,53 @@ import org.hyperledger.fabric.contract.ClientIdentity;
 import org.hyperledger.fabric.contract.Context;
 import org.hyperledger.fabric.shim.ChaincodeException;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.security.cert.CertificateEncodingException;
 import java.security.cert.X509Certificate;
-import java.util.HashMap;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
+
+import static gov.nist.csd.pm.pap.graph.node.NodeType.UA;
 
 /**
  * Provides methods for checking access to Blossom resources and updating the policy as needed.
  */
 public class BlossomPDP {
 
+    // MODIFY VALUE TO MSPID OF ADMIN MEMBER OF NETWORK
+    public static final String ADMINMSP = "Org1MSP";
+
     private static final String BLOSSOM_TARGET = "blossom_target";
     private static final String BLOSSOM_ROLE_ATTR = "blossom.role";
     private static final String AUTHORIZING_OFFICIAL = "Authorizing Official";
     private static final Logger log = Logger.getLogger(BlossomPDP.class);
 
-    private String adminMSP;
-
     public BlossomPDP() {
 
     }
 
-    /**
-     * Get the AdminMSP defined in the policy stored on the ledger.
-     *
-     * @param ctx Chaincode context.
-     * @return The AdminMSP defined in the policy on ledger.
-     * @throws ChaincodeException If there is an error retrieving the policy from the ledger.
-     */
-    public String getADMINMSP(Context ctx) {
-        if (adminMSP != null) {
-            return adminMSP;
-        }
-
-        UserContext userCtx = getUserCtxFromRequest(ctx);
-        MemoryPolicyStore memoryPolicyStore = loadPolicy(ctx, userCtx);
-
-        return getADMINMSP(memoryPolicyStore);
+    public String[] getAllRoles() {
+        return new String[]{"Authorizing Official"};
     }
 
-    private String getADMINMSP(Policy policy) {
-        try {
-            adminMSP = policy.userDefinedPML().getConstant("ADMINMSP").getStringValue();
-            return adminMSP;
-        } catch (PMException e) {
-            throw new ChaincodeException(e);
-        }
+    public String[] getAllPrivileges() {
+        return new String[]{
+                "bootstrap",
+                "update_mou",
+                "get_mou",
+                "sign_mou",
+                "join",
+                "write_ato",
+                "read_ato",
+                "submit_feedback",
+                "initiate_vote",
+                "vote",
+                "certify_vote",
+        };
     }
 
     /**
@@ -77,31 +80,33 @@ public class BlossomPDP {
      * blossom target.
      *
      * @param ctx               Chaincode context.
-     * @param pml               The PML string to initialize an NGAC policy with.
      *
      * @return A PAP object that stores an in memory policy from the given PML.
      *
      * @throws ChaincodeException If the cid is unauthorized or there is an error checking if the cid is unauthorized.
      */
-    public void bootstrap(Context ctx, String pml) {
+    public void bootstrap(Context ctx) throws IOException {
         UserContext userCtx = getUserCtxFromRequest(ctx);
+
+        // get the policy file defined in PML
+        InputStream resourceAsStream = getClass().getClassLoader().getResourceAsStream("policy.pml");
+        if (resourceAsStream == null) {
+            throw new ChaincodeException("could not read policy file");
+        }
+
+        String pml = IOUtils.toString(resourceAsStream, StandardCharsets.UTF_8);
 
         try {
             // create a new PAP object to compile and execute the PML
-            PAP pap = new PAP(new MemoryPolicyStore());
-            UserContext user = new UserContext(getNGACUserName(ctx));
-            pap.deserialize(user, pml, new PMLDeserializer());
+            PAP pap = new MemoryPAP();
+            pap.setPMLConstants(Map.of("ADMINMSP", new StringValue(ADMINMSP)));
+            pap.deserialize(userCtx, pml, new PMLDeserializer());
 
-            PolicyReviewer reviewer = loadPolicyReviewer(ctx, pap);
-            AccessRightSet accessRights = reviewer.access().computePrivileges(userCtx, BLOSSOM_TARGET);
+            // decide if user can bootstrap blossom
+            prepareDecision(ctx, userCtx, pap, true);
+            decide(pap, userCtx, BLOSSOM_TARGET, "bootstrap", "cid is not authorized to bootstrap Blossom");
 
-            if (!accessRights.contains("bootstrap")) {
-                throw new ChaincodeException("cid is not authorized to bootstrap Blossom");
-            }
-
-            // delete user from policy before returning since the returned pap will be written to the world state
-            pap.graph().deleteNode(user.getUser());
-
+            // write policy to world state and ledger
             savePolicy(ctx, pap, userCtx);
         } catch (PMException e) {
             throw new ChaincodeException(e);
@@ -111,13 +116,13 @@ public class BlossomPDP {
     public void join(Context ctx, String account) {
         UserContext userCtx = getUserCtxFromRequest(ctx);
 
-        decide(ctx, userCtx, accountObjectNodeName(account), "join", "cid is not authorized to join for account " + account);
+        decide(ctx, userCtx, accountObjectNodeName(account), "join", true, "cid is not authorized to join for account " + account);
     }
 
     public void readATO(Context ctx, String account) {
         UserContext userCtx = getUserCtxFromRequest(ctx);
 
-        decide(ctx, userCtx, accountObjectNodeName(account), "read_ato", "cid is not authorized to read the ATO of account " + account);
+        decide(ctx, userCtx, accountObjectNodeName(account), "read_ato", true, "cid is not authorized to read the ATO of account " + account);
     }
 
     /**
@@ -128,7 +133,7 @@ public class BlossomPDP {
     public void updateMOU(Context ctx) {
         UserContext userCtx = getUserCtxFromRequest(ctx);
 
-        decide(ctx, userCtx, BLOSSOM_TARGET, "update_mou", "cid is not authorized to update the Blossom MOU");
+        decide(ctx, userCtx, BLOSSOM_TARGET, "update_mou", true, "cid is not authorized to update the Blossom MOU");
     }
 
     /**
@@ -139,28 +144,13 @@ public class BlossomPDP {
      * @throws ChaincodeException If the cid is unauthorized or there is an error checking if the cid is unauthorized.
      */
     public void signMOU(Context ctx) {
-        UserContext userCtx = getUserCtxFromRequest(ctx);
-        MemoryPolicyStore memoryPolicyStore = loadPolicy(ctx, userCtx);
-
-        try {
-            PAP pap = new PAP(memoryPolicyStore);
-            PolicyReviewer reviewer = loadPolicyReviewerWithoutAccountUA(ctx, pap);
-
-            AccessRightSet accessRights = reviewer.access().computePrivileges(userCtx, BLOSSOM_TARGET);
-
-            boolean result = accessRights.contains("sign_mou");
-            if (!result) {
-                throw new ChaincodeException("cid is not authorized to sign the MOU");
-            }
-
-            pap.executePMLFunction(userCtx, "signMOU",
-                                   new StringValue(ctx.getClientIdentity().getMSPID())
-            );
-
-            savePolicy(ctx, memoryPolicyStore, userCtx);
-        } catch (PMException e) {
-            throw new ChaincodeException(e);
-        }
+        executeAdminOperation(
+                ctx,
+                "signMOU",
+                Map.of("accountId", ctx.getClientIdentity().getMSPID()),
+                false,
+                "cid is not authorized to sign the MOU"
+        );
     }
 
     /**
@@ -174,7 +164,7 @@ public class BlossomPDP {
         String target = accountObjectNodeName(account);
         UserContext userCtx = getUserCtxFromRequest(ctx);
 
-        decide(ctx, userCtx, target, "write_ato", "cid is not authorized to write the ATO for account " + account);
+        decide(ctx, userCtx, target, "write_ato", true, "cid is not authorized to write the ATO for account " + account);
     }
 
     /**
@@ -188,7 +178,7 @@ public class BlossomPDP {
         String target = accountObjectNodeName(targetMember);
         UserContext userCtx = getUserCtxFromRequest(ctx);
 
-        decide(ctx, userCtx, target, "submit_feedback", "cid is not authorized to submit feedback on " + targetMember);
+        decide(ctx, userCtx, target, "submit_feedback", true, "cid is not authorized to submit feedback on " + targetMember);
     }
 
     /**
@@ -200,27 +190,16 @@ public class BlossomPDP {
      * @throws ChaincodeException If the cid is unauthorized or there is an error checking if the cid is unauthorized.
      */
     public void initiateVote(Context ctx, String targetMember) {
-        String target = accountObjectNodeName(targetMember);
-        UserContext userCtx = getUserCtxFromRequest(ctx);
-
-        PAP pap = decide(
+        executeAdminOperation(
                 ctx,
-                userCtx,
-                target,
-                "initiate_vote",
+                "initiateVote",
+                Map.of(
+                        "initiator", ctx.getClientIdentity().getMSPID(),
+                        "targetMember", targetMember
+                ),
+                true,
                 "cid is not authorized to initiate a vote on " + targetMember
         );
-
-        try {
-            pap.executePMLFunction(userCtx,"initiateVote",
-                                   new StringValue(ctx.getClientIdentity().getMSPID()),
-                                   new StringValue(targetMember));
-
-            savePolicy(ctx, pap, userCtx);
-        } catch (PMException e) {
-            throw new ChaincodeException(e);
-        }
-
     }
 
     /**
@@ -232,8 +211,8 @@ public class BlossomPDP {
      */
     public void vote(Context ctx, String targetMember) {
         UserContext userCtx = getUserCtxFromRequest(ctx);
-        decide(ctx, userCtx, voteObj(targetMember), "vote",
-               "cid is not authorized to vote on " + targetMember);
+        decide(ctx, userCtx, voteObj(targetMember), "vote", true,
+                "cid is not authorized to vote on " + targetMember);
     }
 
     /**
@@ -241,40 +220,87 @@ public class BlossomPDP {
      *
      * @param ctx          Chaincode context.
      * @param targetMember The target member of the vote.
-     * @param passed
+     * @param passed       If the vote passed or not.
      *
      * @throws ChaincodeException If the cid is unauthorized or there is an error checking if the cid is unauthorized.
      */
     public void certifyVote(Context ctx, String targetMember, String status, boolean passed) {
-        String target = voteObj(targetMember);
+        executeAdminOperation(
+                ctx,
+                "certifyVote",
+                Map.of("targetMember", targetMember, "status", status, "passed", passed),
+                true,
+                "cid is not authorized to certify a vote on " + targetMember
+        );
+    }
+
+    private void executeAdminOperation(Context ctx, String opName, Map<String, Object> operands, boolean assignToAccountUA, String unauthMessage) {
         UserContext userCtx = getUserCtxFromRequest(ctx);
 
-        PAP pap = decide(ctx, userCtx, target, "certify_vote", "cid is not authorized to certify a vote on " + targetMember);
-
-        StringValue targetMemberVal = new StringValue(targetMember);
         try {
-            // certify the vote
-            pap.executePMLFunction(userCtx, "certifyVote", targetMemberVal);
+            // load the policy from the world state
+            PAP pap = getPAPState(ctx, userCtx);
 
-            // update the account status in the policy
-            if (passed) {
-                pap.executePMLFunction(userCtx, "updateAccountStatus", targetMemberVal, new StringValue(status));
+            // prepare the decision by assigning the user to their attributes in the policy
+            prepareDecision(ctx, userCtx, pap, assignToAccountUA);
+
+            // execute the signMOU operation which will check for privileges before executing
+            PDP pdp = new PDP(pap);
+            AdminAdjudicationResponse response = pdp.adjudicateAdminOperation(userCtx, opName, operands);
+            if (response.getDecision() == Decision.DENY) {
+                throw new PMException(unauthMessage);
             }
 
+            // delete the user node from the graph before saving policy state
+            pap.modify().graph().deleteNode(userCtx.getUser());
+
+            // save the policy
             savePolicy(ctx, pap, userCtx);
+        } catch (PMException e) {
+            throw new ChaincodeException(e.getMessage());
+        }
+    }
+
+    private void prepareDecision(Context ctx, UserContext userCtx, PAP pap, boolean assignToAccountUA) {
+        try {
+            String mspid = ctx.getClientIdentity().getMSPID();
+            String role = ctx.getClientIdentity().getAttributeValue(BLOSSOM_ROLE_ATTR);
+            String accountUA = accountUsersNodeName(mspid);
+
+            if (!pap.query().graph().nodeExists(role)) {
+                throw new ChaincodeException("unknown user role: " + role);
+            } else if (assignToAccountUA && !pap.query().graph().nodeExists(accountUA)) {
+                throw new ChaincodeException("account " + mspid + " does not exist");
+            }
+
+            // create the calling user in the graph and assign to appropriate attributes
+            pap.modify().graph().createUser(userCtx.getUser(), List.of(role));
+
+            // if account UA exists assign the user to it
+            if (pap.query().graph().nodeExists(accountUA)) {
+                pap.modify().graph().assign(userCtx.getUser(), List.of(accountUA));
+            }
+
+            // check if user is blossom admin
+            if (ADMINMSP.equals(mspid) && role.equals(AUTHORIZING_OFFICIAL)) {
+                pap.modify().graph().assign(userCtx.getUser(), List.of("Blossom Admin"));
+            }
         } catch (PMException e) {
             throw new ChaincodeException(e);
         }
     }
 
-    private PAP decide(Context ctx, UserContext userCtx, String target, String ar, String unauthMessage) {
-        MemoryPolicyStore memoryPolicyStore = loadPolicy(ctx, userCtx);
+    private void decide(Context ctx, UserContext userCtx, String target, String ar, boolean assignToAccountUA, String unauthMessage) {
+        PAP pap = getPAPState(ctx, userCtx);
 
+        prepareDecision(ctx, userCtx, pap, assignToAccountUA);
+
+        decide(pap, userCtx, target, ar, unauthMessage);
+    }
+
+    private void decide(PAP pap, UserContext userCtx, String target, String ar, String unauthMessage) {
         try {
-            PAP pap = new PAP(memoryPolicyStore);
-            PolicyReviewer reviewer = loadPolicyReviewer(ctx, pap);
-
-            AccessRightSet accessRights = reviewer.access().computePrivileges(userCtx, target);
+            AccessRightSet accessRights = pap.query().access().computePrivileges(userCtx, target);
 
             log.info("user " + userCtx.getUser() + " has privs " + accessRights + " on " + target);
 
@@ -283,9 +309,7 @@ public class BlossomPDP {
                 throw new ChaincodeException(unauthMessage);
             }
 
-            pap.graph().deleteNode(userCtx.getUser());
-
-            return pap;
+            pap.modify().graph().deleteNode(userCtx.getUser());
         } catch (PMException e) {
             throw new ChaincodeException(e);
         }
@@ -298,7 +322,7 @@ public class BlossomPDP {
      * @return The policy in memory.
      * @throws ChaincodeException If the cid is unauthorized or there is an error checking if the cid is unauthorized.
      */
-    public static MemoryPolicyStore loadPolicy(Context ctx, UserContext userCtx) {
+    public static PAP getPAPState(Context ctx, UserContext userCtx) {
         byte[] policy = ctx.getStub().getState("policy");
         if (policy.length == 0) {
             throw new ChaincodeException("ngac policy has not been initialized");
@@ -307,10 +331,11 @@ public class BlossomPDP {
         String json = new String(policy, StandardCharsets.UTF_8);
 
         try {
-            MemoryPolicyStore memoryPolicyStore = new MemoryPolicyStore();
-            memoryPolicyStore.deserialize(userCtx, json, new JSONDeserializer());
+            MemoryPAP pap = new MemoryPAP();
+            pap.setPMLConstants(Map.of("ADMINMSP", new StringValue(ADMINMSP)));
+            pap.deserialize(userCtx, json, new JSONDeserializer());
 
-            return memoryPolicyStore;
+            return pap;
         } catch (PMException e) {
             throw new ChaincodeException(e);
         }
@@ -351,64 +376,8 @@ public class BlossomPDP {
         return new UserContext(getNGACUserName(ctx));
     }
 
-    private PolicyReviewer loadPolicyReviewer(Context ctx, PAP policy) {
-        String ngacUserName = getNGACUserName(ctx);
-        String mspid = ctx.getClientIdentity().getMSPID();
-        String role = ctx.getClientIdentity().getAttributeValue(BLOSSOM_ROLE_ATTR);
-        String accountUA = accountUsersNodeName(mspid);
-
-        try {
-            if (!policy.graph().nodeExists(role)) {
-                throw new ChaincodeException("unknown user role: " + role);
-            } else if (!policy.graph().nodeExists(accountUA)) {
-                throw new ChaincodeException("account " + mspid + " does not exist");
-            }
-
-            // create the calling user in the graph and assign to appropriate attributes
-            policy.graph().createUser(ngacUserName, accountUA, role);
-
-            // check if user is blossom admin
-            if (getADMINMSP(policy).equals(mspid) && role.equals(AUTHORIZING_OFFICIAL)) {
-                policy.graph().assign(ngacUserName, "Blossom Admin");
-            }
-
-            // create a new PolicyReviewer object to make a decision
-            return new PolicyReviewer(policy);
-        } catch (PMException e) {
-            throw new ChaincodeException(e);
-        }
-    }
-
-    /*
-    This is called only once before the account ua is created
-     */
-    private PolicyReviewer loadPolicyReviewerWithoutAccountUA(Context ctx, PAP policy) {
-        String ngacUserName = getNGACUserName(ctx);
-        String mspid = ctx.getClientIdentity().getMSPID();
-        String role = ctx.getClientIdentity().getAttributeValue(BLOSSOM_ROLE_ATTR);
-
-        try {
-            if (!policy.graph().nodeExists(role)) {
-                throw new ChaincodeException("unknown user role: " + role);
-            }
-
-            // create the user in the policy
-            policy.graph().createUser(ngacUserName, role);
-
-            // a user is a Blossom Admin if 1) they are in the admin msp and 2) they are a Authorizing Official
-            if (getADMINMSP(policy).equals(mspid) && role.equals(AUTHORIZING_OFFICIAL)) {
-                policy.graph().assign(ngacUserName, "Blossom Admin");
-            }
-        } catch (PMException e) {
-            throw new ChaincodeException(e);
-        }
-
-        // create a new PolicyReviewer object to make a decision
-        return new PolicyReviewer(policy);
-    }
-
-    private void savePolicy(Context ctx, Policy policy, UserContext user) throws PMException {
-        policy.graph().deleteNode(user.getUser());
-        ctx.getStub().putState("policy", policy.serialize(new JSONSerializer()).getBytes(StandardCharsets.UTF_8));
+    private void savePolicy(Context ctx, PAP pap, UserContext user) throws PMException {
+        pap.modify().graph().deleteNode(user.getUser());
+        ctx.getStub().putState("policy", pap.serialize(new JSONSerializer()).getBytes(StandardCharsets.UTF_8));
     }
 }

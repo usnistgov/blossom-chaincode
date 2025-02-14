@@ -20,6 +20,7 @@ import java.util.List;
 
 import static contract.AccountContract.accountKey;
 import static model.Status.AUTHORIZED;
+import static ngac.BlossomPDP.ADMINMSP;
 
 /**
  * Chaincode functions to support voting on account statuses.
@@ -63,7 +64,6 @@ public class VoteContract implements ContractInterface {
                              String statusChange, String reason) {
         BlossomPDP pdp = new BlossomPDP();
         String initiatorAccountId = ctx.getClientIdentity().getMSPID();
-        String adminmsp = pdp.getADMINMSP(ctx);
         String voteId = ctx.getStub().getTxId();
         String voteKey = voteKey(targetAccountId);
 
@@ -84,7 +84,7 @@ public class VoteContract implements ContractInterface {
 
         // determine the correct threshold for vote
         Vote.Threshold threshold = Vote.Threshold.MAJORITY;
-        if (targetAccountId.equals(adminmsp)) {
+        if (targetAccountId.equals(ADMINMSP)) {
             threshold = Vote.Threshold.SUPER_MAJORITY;
         }
 
@@ -100,8 +100,8 @@ public class VoteContract implements ContractInterface {
         }
 
         // if there are no authorized voters, only votes on the blossom admin are allowed
-        if (voters.size() == 1 && !targetAccountId.equals(adminmsp)) {
-            throw new ChaincodeException("only votes on the ADMINMSP " + adminmsp + " are allowed when there are no authorized members");
+        if (voters.size() == 1 && !targetAccountId.equals(ADMINMSP)) {
+            throw new ChaincodeException("only votes on the ADMINMSP " + ADMINMSP + " are allowed when there are no authorized members");
         }
 
         Vote vote = new Vote(voteId, initiatorAccountId, targetAccountId, status,

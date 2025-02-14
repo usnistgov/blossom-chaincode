@@ -1,6 +1,6 @@
 package model;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
+
 import org.hyperledger.fabric.contract.annotation.DataType;
 import org.hyperledger.fabric.contract.annotation.Property;
 
@@ -34,7 +34,7 @@ public class AccountHistorySnapshot implements Serializable {
     public AccountHistorySnapshot() {
     }
 
-    public AccountHistorySnapshot(@JsonProperty String txID, @JsonProperty String timestamp, @JsonProperty Account account) {
+    public AccountHistorySnapshot(String txID, String timestamp, Account account) {
         this.txID = txID;
         this.timestamp = timestamp;
         this.account = account;

@@ -1,6 +1,6 @@
 package model;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
+
 import org.apache.commons.lang3.SerializationUtils;
 import org.hyperledger.fabric.contract.annotation.DataType;
 import org.hyperledger.fabric.contract.annotation.Property;
@@ -23,10 +23,10 @@ public class Asset implements Serializable {
     @Property
     private String endDate;
 
-    public Asset(@JsonProperty String id,
-                 @JsonProperty String name,
-                 @JsonProperty String startDate,
-                 @JsonProperty String endDate) {
+    public Asset( String id,
+                  String name,
+                  String startDate,
+                  String endDate) {
         this.id = id;
         this.name = name;
         this.startDate = startDate;

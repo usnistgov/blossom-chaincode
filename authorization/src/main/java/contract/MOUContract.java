@@ -1,7 +1,7 @@
 package contract;
 
 import contract.event.SignMOUEvent;
-import gov.nist.csd.pm.policy.exceptions.PMException;
+import gov.nist.csd.pm.pap.exception.PMException;
 import model.Account;
 import model.MOU;
 import model.Status;

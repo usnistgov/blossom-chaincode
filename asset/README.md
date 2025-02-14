@@ -104,6 +104,9 @@ account status. Account status is determined by invoking the authorization chain
   - [DeleteSWID](#DeleteSWID)
   - [GetSWID](#GetSWID)
   - [GetLicensesWithSWIDsForOrder](#GetLicensesWithSWIDsForOrder)
+- [NGAC Contract](#ngac-contract)
+  - [GetAllRoles](#GetAllRoles)
+  - [GetAllPrivileges](#GetAllPrivileges)
 
 ## Transient Requests
 
@@ -758,3 +761,33 @@ Get the licenses that are already associated with a SWID tag for this order ID a
   - Role: LO, ACQ, TPOC
   - Account: RO or SP
   - Status: Authorized
+
+
+## NGAC Contract
+### GetAllRoles
+Get all roles recognized by the Asset chaincode.
+
+- transient: none
+- output: ["Acquisition Officer", "Technical Point of Contact", "License Owner"]
+- endorsers: any
+- NGAC policy requirements: none
+
+### GetAllPrivileges
+Get all privileges recognized by the Asset chaincode.
+
+- transient: none
+- output: ["write_asset"
+  "read_assets"
+  "read_asset_detail"
+  "initiate_order"
+  "approve_order"
+  "deny_order"
+  "read_order"
+  "allocate_license"
+  "return_license"
+  "read_license"
+  "write_swid"
+  "read_swid"]
+- endorsers: any
+- NGAC policy requirements: none
+

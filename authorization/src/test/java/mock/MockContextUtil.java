@@ -5,13 +5,15 @@ import contract.AccountContract;
 import contract.BootstrapContract;
 import contract.MOUContract;
 import gov.nist.csd.pm.pap.PAP;
-import gov.nist.csd.pm.pap.memory.MemoryPolicyStore;
-import gov.nist.csd.pm.policy.exceptions.PMException;
-import gov.nist.csd.pm.policy.model.access.UserContext;
-import gov.nist.csd.pm.policy.pml.value.StringValue;
-import gov.nist.csd.pm.policy.serialization.json.JSONSerializer;
-import mock.MockContext;
-import mock.MockIdentity;
+
+import gov.nist.csd.pm.pap.exception.PMException;
+import gov.nist.csd.pm.pap.op.Operation;
+import gov.nist.csd.pm.pap.pml.context.ExecutionContext;
+import gov.nist.csd.pm.pap.pml.executable.operation.PMLOperation;
+import gov.nist.csd.pm.pap.query.UserContext;
+import gov.nist.csd.pm.pap.serialization.json.JSONSerializer;
+import gov.nist.csd.pm.pdp.OperationRequest;
+import gov.nist.csd.pm.pdp.PDP;
 import model.Account;
 import model.Status;
 import org.apache.commons.lang3.SerializationUtils;
@@ -21,12 +23,14 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.time.Instant;
 import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import static contract.AccountContract.accountKey;
 import static mock.MockOrgs.*;
 import static model.Status.AUTHORIZED;
+import static ngac.BlossomPDP.getPAPState;
 import static ngac.BlossomPDP.getUserCtxFromRequest;
-import static ngac.BlossomPDP.loadPolicy;
 
 public class MockContextUtil {
 
@@ -137,14 +141,16 @@ public class MockContextUtil {
     }
 
     public static void updateAccountStatus(Context ctx, String mspid, Status status) throws PMException {
-        MemoryPolicyStore memoryPolicyStore = loadPolicy(ctx, getUserCtxFromRequest(ctx));
+        UserContext userCtx = getUserCtxFromRequest(ctx);
+        PAP pap = getPAPState(ctx, userCtx);
 
-        PAP pap = new PAP(memoryPolicyStore);
-        pap.executePMLFunction(new UserContext("blossom admin"), "updateAccountStatus",
-                               new StringValue(mspid), new StringValue(status.toString())
-        );
+        ExecutionContext executionContext = new ExecutionContext(userCtx, pap);
+        PMLOperation pmlOp = (PMLOperation) pap.query().operations().getAdminOperation("updateAccountStatus");
+        pmlOp.setCtx(executionContext);
+        pmlOp.withOperands(Map.of("accountId", mspid, "status", status.toString()))
+                .execute(pap);
 
-        ctx.getStub().putState("policy", memoryPolicyStore.serialize(new JSONSerializer()).getBytes(StandardCharsets.UTF_8));
+        ctx.getStub().putState("policy", pap.serialize(new JSONSerializer()).getBytes(StandardCharsets.UTF_8));
 
         // retrieve the account and update the status
         Account account = new AccountContract().GetAccount(ctx, mspid);

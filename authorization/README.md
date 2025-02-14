@@ -16,6 +16,23 @@ make build-auth
 This will create the shadowJar in `blossom-core/chaincode/authorization/build/libs/authorization.jar` and rebuild the libs
 directory `blossom-core/chaincode/authorization/build/libs`.
 
+## Roles and Privileges
+### Roles
+- "Authorizing Official"
+
+### Privileges
+- "bootstrap"
+- "update_mou"
+- "get_mou"
+- "sign_mou"
+- "join"
+- "write_ato"
+- "read_ato"
+- "submit_feedback"
+- "initiate_vote"
+- "vote"
+- "certify_vote"
+
 ## Authorization Statuses
 
 - AUTHORIZED
@@ -50,6 +67,9 @@ There is only one end user role supported by the Blossom authorization chaincode
   - CertifyOngoingVote
   - GetOngoingVote
   - GetVoteHistory
+- ngac
+  - GetAllRoles
+  - GetAllPrivileges
 
 ## ATO and Feedback Transient Data
 
