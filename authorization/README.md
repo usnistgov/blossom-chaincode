@@ -1,20 +1,18 @@
 # Authorization Chaincode
 
-Chaincode functions to handle Blossom authorization. See design document: https://github.com/usnistgov/blossom-nist-member/wiki/BloSS@M:-Asset-Channel-Design.
+Chaincode functions to handle Blossom authorization. See design document: https://github.com/usnistgov/blossom-nist-member/wiki/BloSS@M-ATO-Process.
 
 ## Set ADMINMSP value
-In [./authorization/src/main/resources/policy.pml](./authorization/src/main/resources/policy.pml) set the value of `ADMINMSP` to the MSPID of the Blossom Admin member.
-
-**Example:** `const ADMINMSP = "SAMS-MSPID"`
+In [./src/main/resources/policy.pml](./src/main/java/ngac/BlossomPDP.java) set the value of the `ADMINMSP` constant to the MSPID of the Blossom Admin member.
 
 ## Build Chaincode
-To build the chaincode using Docker with java 11 and gradle 5.6.2, from `blossom-core/chaincode/authorization/` run:
+To build the chaincode using Docker with java 11 and gradle 5.6.2, from the authorization directory run:
 ```
 make build-auth
 ```
 
-This will create the shadowJar in `blossom-core/chaincode/authorization/build/libs/authorization.jar` and rebuild the libs
-directory `blossom-core/chaincode/authorization/build/libs`.
+This will create the jar file in `./build/libs/authorization.jar` and rebuild the libs
+directory `./libs`.
 
 ## Roles and Privileges
 ### Roles

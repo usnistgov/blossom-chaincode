@@ -1,24 +1,19 @@
 # Asset Chaincode
 
-Chaincode functions to handle the Blossom asset use case. See design document: https://github.com/usnistgov/blossom-nist-member/wiki/BloSS@M-ATO-Process.
+Chaincode functions to handle the Blossom asset use case. See design document:  https://github.com/usnistgov/blossom-nist-member/wiki/BloSS@M:-Asset-Channel-Design.
 
 ## Set ADMINMSP value
 In [./src/main/java/ngac/PolicyBuilder.java](./src/main/java/ngac/PolicyBuilder.java) set the value of the `ADMINMSP` constant
 variable to the MSPID of the Blossom Admin member. **This value should be the same as the value set for the authorization chaincode**.
 
-**Example:** 
-```java
-public static final String ADMINMSP = "Org1MSP";
-```
-
 ## Build Chaincode
-To build the chaincode using Docker with java 11 and gradle 5.6.2, from `blossom-core/chaincode/asset/` run:
+To build the chaincode using Docker with java 11 and gradle 5.6.2, from the asset directory run:
 ```
 make build-asset
 ```
 
-This will create the shadowJar in `blossom-core/chaincode/asset/build/libs/asset.jar` and rebuild the libs
-directory `blossom-core/chaincode/asset/build/libs`.
+This will create the shadowJar in `./build/libs/asset.jar` and rebuild the libs
+directory `./libs`.
 
 ## Endorsement
 The asset chaincode relies heavily on Implicit Private Data Collections (IPDC) to store information related to orders and licenses.
