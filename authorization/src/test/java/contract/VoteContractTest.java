@@ -12,7 +12,7 @@ import mock.MockEvent;
 import mock.MockIdentity;
 import model.Status;
 import model.Vote;
-import ngac.BlossomPDP;
+import ngac.MSPConfig;
 import org.apache.commons.lang3.SerializationUtils;
 import org.hyperledger.fabric.shim.ChaincodeException;
 import org.junit.jupiter.api.Nested;
@@ -646,7 +646,7 @@ class VoteContractTest {
 
         try {
             PAP pap = new MemoryPAP();
-            pap.setPMLConstants(Map.of("ADMINMSP", new StringValue(BlossomPDP.ADMINMSP)));
+            pap.setPMLConstants(Map.of("ADMINMSP", new StringValue(MSPConfig.ADMINMSP)));
             pap.deserialize(new UserContext(""), json, new JSONDeserializer());
 
             Collection<String> parents = pap.query().graph().getDescendants(targetMember + " users");

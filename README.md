@@ -2,6 +2,22 @@
 
 This package contains the code for the Blossom Smart Contracts. There are two Smart Contracts: [Authorization](./authorization) and [Asset](./asset).
 
+## Chaincode Installation
+Before installing chaincode, you must update the ADMINMSP constant in **both the asset and authorization source code**.
+To do so, navigate to the following files:
+
+- Asset: [./asset/src/main/java/ngac/MSPConfig.java#L7](./asset/src/main/java/ngac/MSPConfig.java#L7)
+- Authorization: [./authorization/src/main/java/ngac/MSPConfig.java#L7](./authorization/src/main/java/ngac/MSPConfig.java#L7)
+
+and update the value of the `ADMINMSP` constant in both files to the MSPID of the admin member of the blossom deployment. 
+For example:
+
+`public static final String ADMINMSP = "m-A1B2C3D4E5F6G6H7I8J9KALBMCND";`
+
+Use the following command to find the files using the command line:
+
+`grep -r 'public static final String ADMINMSP' *`
+
 ## E2E Tests
 From `./e2e`, run `make fabirc-up` to start a local Fabric test network. There are two tests:
 

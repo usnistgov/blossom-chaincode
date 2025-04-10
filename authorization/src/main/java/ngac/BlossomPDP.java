@@ -3,18 +3,15 @@ package ngac;
 import gov.nist.csd.pm.impl.memory.pap.MemoryPAP;
 import gov.nist.csd.pm.pap.PAP;
 import gov.nist.csd.pm.pap.exception.PMException;
-import gov.nist.csd.pm.pap.graph.node.Node;
 import gov.nist.csd.pm.pap.graph.relationship.AccessRightSet;
 import gov.nist.csd.pm.pap.pml.value.StringValue;
 import gov.nist.csd.pm.pap.query.UserContext;
-import gov.nist.csd.pm.pap.query.explain.Explain;
 import gov.nist.csd.pm.pap.serialization.json.JSONDeserializer;
 import gov.nist.csd.pm.pap.serialization.json.JSONSerializer;
 import gov.nist.csd.pm.pap.serialization.pml.PMLDeserializer;
 import gov.nist.csd.pm.pdp.AdminAdjudicationResponse;
 import gov.nist.csd.pm.pdp.Decision;
 import gov.nist.csd.pm.pdp.PDP;
-import gov.nist.csd.pm.pdp.exception.UnauthorizedException;
 import org.apache.commons.io.IOUtils;
 import org.bouncycastle.asn1.x500.AttributeTypeAndValue;
 import org.bouncycastle.asn1.x500.RDN;
@@ -31,20 +28,13 @@ import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.security.cert.CertificateEncodingException;
 import java.security.cert.X509Certificate;
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 import java.util.Map;
-
-import static gov.nist.csd.pm.pap.graph.node.NodeType.UA;
 
 /**
  * Provides methods for checking access to Blossom resources and updating the policy as needed.
  */
 public class BlossomPDP {
-
-    // MODIFY VALUE TO MSPID OF ADMIN MEMBER OF NETWORK
-    public static final String ADMINMSP = "Org1MSP";
 
     private static final String BLOSSOM_TARGET = "blossom_target";
     private static final String BLOSSOM_ROLE_ATTR = "blossom.role";
@@ -99,7 +89,7 @@ public class BlossomPDP {
         try {
             // create a new PAP object to compile and execute the PML
             PAP pap = new MemoryPAP();
-            pap.setPMLConstants(Map.of("ADMINMSP", new StringValue(ADMINMSP)));
+            pap.setPMLConstants(Map.of("ADMINMSP", new StringValue(MSPConfig.ADMINMSP)));
             pap.deserialize(userCtx, pml, new PMLDeserializer());
 
             // decide if user can bootstrap blossom
@@ -282,7 +272,7 @@ public class BlossomPDP {
             }
 
             // check if user is blossom admin
-            if (ADMINMSP.equals(mspid) && role.equals(AUTHORIZING_OFFICIAL)) {
+            if (MSPConfig.ADMINMSP.equals(mspid) && role.equals(AUTHORIZING_OFFICIAL)) {
                 pap.modify().graph().assign(userCtx.getUser(), List.of("Blossom Admin"));
             }
         } catch (PMException e) {
@@ -332,7 +322,7 @@ public class BlossomPDP {
 
         try {
             MemoryPAP pap = new MemoryPAP();
-            pap.setPMLConstants(Map.of("ADMINMSP", new StringValue(ADMINMSP)));
+            pap.setPMLConstants(Map.of("ADMINMSP", new StringValue(MSPConfig.ADMINMSP)));
             pap.deserialize(userCtx, json, new JSONDeserializer());
 
             return pap;

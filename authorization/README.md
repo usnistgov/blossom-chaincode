@@ -3,7 +3,7 @@
 Chaincode functions to handle Blossom authorization. See design document: https://github.com/usnistgov/blossom-nist-member/wiki/BloSS@M-ATO-Process.
 
 ## Set ADMINMSP value
-In [./src/main/resources/policy.pml](./src/main/java/ngac/BlossomPDP.java) set the value of the `ADMINMSP` constant to the MSPID of the Blossom Admin member.
+In [./src/main/java/ngac/MSPConfig.java](./src/main/java/ngac/MSPConfig.java) set the value of the `ADMINMSP` constant to the MSPID of the Blossom Admin member.
 
 ## Build Chaincode
 To build the chaincode using Docker with java 11 and gradle 5.6.2, from the authorization directory run:
