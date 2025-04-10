@@ -14,6 +14,10 @@ For example:
 
 `public static final String ADMINMSP = "m-A1B2C3D4E5F6G6H7I8J9KALBMCND";`
 
+Use the following command to find the files using the command line:
+
+`grep -r 'public static final String ADMINMSP' *`
+
 ## E2E Tests
 From `./e2e`, run `make fabirc-up` to start a local Fabric test network. There are two tests:
 
