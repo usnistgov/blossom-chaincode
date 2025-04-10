@@ -6,8 +6,8 @@ This package contains the code for the Blossom Smart Contracts. There are two Sm
 Before installing chaincode, you must update the ADMINMSP constant in **both the asset and authorization source code**.
 To do so, navigate to the following files:
 
-- Asset: [./src/main/java/ngac/MSPConfig](./asset/src/main/java/ngac/MSPConfig)
-- Authorization: [./src/main/java/ngac/MSPConfig](./asset/src/main/java/ngac/MSPConfig)
+- Asset: [./asset/src/main/java/ngac/MSPConfig.java#L7](./asset/src/main/java/ngac/MSPConfig.java#L7)
+- Authorization: [./authorization/src/main/java/ngac/MSPConfig.java#L7](./authorization/src/main/java/ngac/MSPConfig.java#L7)
 
 and update the value of the `ADMINMSP` constant in both files to the MSPID of the admin member of the blossom deployment. 
 For example:
