@@ -5,6 +5,7 @@ import contract.response.AssetDetailResponse;
 import contract.response.AssetResponse;
 import contract.response.IdResponse;
 import model.*;
+import ngac.MSPConfig;
 import ngac.PDP;
 import org.hyperledger.fabric.Logger;
 import org.hyperledger.fabric.contract.Context;
@@ -17,13 +18,10 @@ import org.hyperledger.fabric.shim.ledger.KeyModification;
 import org.hyperledger.fabric.shim.ledger.KeyValue;
 import org.hyperledger.fabric.shim.ledger.QueryResultsIterator;
 
-import java.time.Instant;
 import java.util.*;
 
-import static model.DateFormatter.isExpired;
 import static model.LicenseKey.hashedLicenseKey;
 import static model.LicenseKey.licenseKey;
-import static ngac.PolicyBuilder.ADMINMSP;
 
 @Contract(
         name = "asset",
@@ -35,7 +33,7 @@ import static ngac.PolicyBuilder.ADMINMSP;
 )
 public class AssetContract implements ContractInterface {
 
-    public static final String  ADMINMSP_IPDC = accountIPDC(ADMINMSP);
+    public static final String  ADMINMSP_IPDC = accountIPDC(MSPConfig.ADMINMSP);
     public static final String ASSET_PREFIX = "asset:";
 
     private static final Logger log = Logger.getLogger(AssetContract.class);

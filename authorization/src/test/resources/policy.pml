@@ -9,7 +9,7 @@ set resource operations [
     "submit_feedback",
     "initiate_vote",
     "vote",
-    "certify_vote",
+    "certify_vote"
 ]
 
 create pc "ADMIN_MSP_PC"

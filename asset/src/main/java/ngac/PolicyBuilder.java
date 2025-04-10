@@ -29,11 +29,6 @@ import static model.Status.*;
 
 public class PolicyBuilder {
 
-    /*
-    update to ADMINMSP of deployment
-     */
-    public static final String ADMINMSP = "Org1MSP";
-
     // roles
     public static final String BLOSSOM_ROLE_ATTR = "blossom.role";
     public static final String ACQ_OFFICER = "Acquisition Officer";
@@ -82,7 +77,7 @@ public class PolicyBuilder {
 
         // deny non adminmsp ACQ eleveated privs on assets
         String cidAccount = ctx.getClientIdentity().getMSPID();
-        if (!cidAccount.equals(ADMINMSP)) {
+        if (!cidAccount.equals(MSPConfig.ADMINMSP)) {
             pap.modify().prohibitions().createProhibition(
                     "deny non-adminmsp ACQ",
                     ProhibitionSubject.userAttribute(ACQ_OFFICER),
@@ -106,7 +101,7 @@ public class PolicyBuilder {
         pap.modify().graph().createObject(accountTarget, List.of(targetAccountOA, "RBAC/account", "Status/account"));
 
         // if the targetAccountUA exists, then the request is from the same account, associate the ua and oa
-        // otherwise do nothing as the accounts dont match, adminmsp will be taken care of in following block
+        // otherwise do nothing as the accounts don't match, adminmsp will be taken care of in following block
         String targetAccountUA = accountUA(targetAccount);
         if (pap.query().graph().nodeExists(targetAccountUA)) {
             pap.modify().graph().associate(targetAccountUA, targetAccountOA, new AccessRightSet(ALL_ACCESS_RIGHTS));
@@ -115,7 +110,7 @@ public class PolicyBuilder {
         // if cid is adminmsp, grant access to target account oa and
         // deny adminmsp elevated privs on account target
         String cidAccount = ctx.getClientIdentity().getMSPID();
-        if (cidAccount.equals(ADMINMSP)) {
+        if (cidAccount.equals(MSPConfig.ADMINMSP)) {
             String cidAcctUA = accountUA(cidAccount);
             pap.modify().graph().associate(cidAcctUA, targetAccountOA, new AccessRightSet(ALL_ACCESS_RIGHTS));
 
@@ -253,8 +248,8 @@ public class PolicyBuilder {
 
         // if adminmsp only SO and ACQ are allowed roles
         // if not adminmsp only TPOC and ACQ are allowed roles
-        if ((account.equals(ADMINMSP) && !(role.equals(LICENSE_OWNER) || role.equals(ACQ_OFFICER))) ||
-                (!account.equals(ADMINMSP) && !(role.equals(TPOC) || role.equals(ACQ_OFFICER)))) {
+        if ((account.equals(MSPConfig.ADMINMSP) && !(role.equals(LICENSE_OWNER) || role.equals(ACQ_OFFICER))) ||
+                (!account.equals(MSPConfig.ADMINMSP) && !(role.equals(TPOC) || role.equals(ACQ_OFFICER)))) {
             throw new ChaincodeException("invalid role " + role);
         }
 

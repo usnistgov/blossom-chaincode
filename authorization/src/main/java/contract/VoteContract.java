@@ -20,7 +20,7 @@ import java.util.List;
 
 import static contract.AccountContract.accountKey;
 import static model.Status.AUTHORIZED;
-import static ngac.BlossomPDP.ADMINMSP;
+import static ngac.MSPConfig.ADMINMSP;
 
 /**
  * Chaincode functions to support voting on account statuses.

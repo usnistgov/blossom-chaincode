@@ -3,7 +3,7 @@
 Chaincode functions to handle the Blossom asset use case. See design document:  https://github.com/usnistgov/blossom-nist-member/wiki/BloSS@M:-Asset-Channel-Design.
 
 ## Set ADMINMSP value
-In [./src/main/java/ngac/PolicyBuilder.java](./src/main/java/ngac/PolicyBuilder.java) set the value of the `ADMINMSP` constant
+In [./src/main/java/ngac/MSPConfig.java](./src/main/java/ngac/MSPConfig.java) set the value of the `ADMINMSP` constant
 variable to the MSPID of the Blossom Admin member. **This value should be the same as the value set for the authorization chaincode**.
 
 ## Build Chaincode
