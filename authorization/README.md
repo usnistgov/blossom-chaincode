@@ -49,16 +49,17 @@ There is only one end user role supported by the Blossom authorization chaincode
   - GetAccount
   - GetAccountStatus
   - GetAccountHistory
+  - Join
 - ato
   - CreateATO
   - UpdateATO
+  - GetATO
   - SubmitFeedback
 - mou
   - UpdateMOU
   - GetMOU
   - GetMOUHistory
   - SignMOU
-  - Join
 - vote
   - InitiateVote 
   - Vote
