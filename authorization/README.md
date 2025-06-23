@@ -43,32 +43,32 @@ There is only one end user role supported by the Blossom authorization chaincode
 ## Chaincode Functions
 
 - bootstrap
-  - Bootstrap
+  - Bootstrap (bootstrap:Bootstrap)
 - account
-  - GetAccounts
-  - GetAccount
-  - GetAccountStatus
-  - GetAccountHistory
-  - Join
+  - GetAccounts (account:GetAccounts)
+  - GetAccount (account:GetAccount)
+  - GetAccountStatus (account:GetAccountStatus)
+  - GetAccountHistory (account:GetAccountHistory)
+  - Join (account:Join)
 - ato
-  - CreateATO
-  - UpdateATO
-  - GetATO
-  - SubmitFeedback
+  - CreateATO (ato:CreateATO)
+  - UpdateATO (ato:UpdateATO)
+  - GetATO (ato:GetATO)
+  - SubmitFeedback (ato:SubmitFeedback)
 - mou
-  - UpdateMOU
-  - GetMOU
-  - GetMOUHistory
-  - SignMOU
+  - UpdateMOU (mou:UpdateMOU)
+  - GetMOU (mou:GetMOU)
+  - GetMOUHistory (mou:GetMOUHistory)
+  - SignMOU (mou:SignMOU)
 - vote
-  - InitiateVote 
-  - Vote
-  - CertifyOngoingVote
-  - GetOngoingVote
-  - GetVoteHistory
+  - InitiateVote  (vote:InitiateVote)
+  - Vote (vote:Vote)
+  - CertifyOngoingVote (vote:CertifyOngoingVote)
+  - GetOngoingVote (vote:GetOngoingVote)
+  - GetVoteHistory (vote:GetVoteHistory)
 - ngac
-  - GetAllRoles
-  - GetAllPrivileges
+  - GetAllRoles (ngac:GetAllRoles)
+  - GetAllPrivileges (ngac:GetAllPrivileges)
 
 ## ATO and Feedback Transient Data
 
